@@ -16,4 +16,16 @@ function render(component, container, place = RenderPosition.BEFOREEND) {
   container.insertAdjacentElement(place, component.getElement());
 }
 
+
+export default class BaseView {
+
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.template);
+
+    }
+    return this.element;
+  }
+}
+
 export {RenderPosition, createElement, render};
