@@ -41,15 +41,16 @@ const pointElements = `
 const pointListElements = '<ul class="trip-events__list"></ul>';
 
 class PointListView extends BaseView {
-  getTemplate() {
+  get template() {
     return createItemTemplate(pointListElements);
   }
 }
 
 class PointView extends BaseView {
-  getTemplate() {
+  get template() {
     return createItemTemplate(pointElements);
   }
 }
+
 
 export { PointView, PointListView };

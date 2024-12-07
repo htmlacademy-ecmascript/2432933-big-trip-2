@@ -1,6 +1,6 @@
-import {createItemTemplate, BaseView } from '../render';
+import BaseView from '../render';
 
-const formTripSort = `  <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+const createSortPointTemplate = () => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
             <div class="trip-sort__item  trip-sort__item--day">
               <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day">
               <label class="trip-sort__btn" for="sort-day">Day</label>
@@ -28,13 +28,14 @@ const formTripSort = `  <form class="trip-events__trip-sort  trip-sort" action="
           </form>`;
 
 
-class SortView extends BaseView {
-  getTemplate() {
-    return createItemTemplate(formTripSort);
+export default class PointSortView extends BaseView {
+  constructor(){
+    super();
+  }
+
+  get template() {
+    return createSortPointTemplate();
   }
 
 }
-
-
-export {SortView};
 

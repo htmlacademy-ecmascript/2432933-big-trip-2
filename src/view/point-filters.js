@@ -1,9 +1,12 @@
-import {createItemTemplate, BaseView } from '../render';
+import BaseView from '../render';
 
-const formFilterView = `
+const createformFiltersTemplate = () => `
+
+            <div class="trip-controls__filters">
+              <h2 class="visually-hidden">Filter events</h2>
               <form class="trip-filters" action="#" method="get">
                 <div class="trip-filters__filter">
-                  <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything">
+                  <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked="">
                   <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
                 </div>
 
@@ -18,20 +21,18 @@ const formFilterView = `
                 </div>
 
                 <div class="trip-filters__filter">
-                  <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" checked>
+                  <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past">
                   <label class="trip-filters__filter-label" for="filter-past">Past</label>
                 </div>
 
                 <button class="visually-hidden" type="submit">Accept filter</button>
-              </form>`;
+              </form>
+            </div>
+          `;
 
 
-class FilterView extends BaseView {
-  getTemplate() {
-    return createItemTemplate(formFilterView);
+export default class FilterView extends BaseView {
+  get template() {
+    return createformFiltersTemplate();
   }
-
 }
-
-
-export { FilterView };
