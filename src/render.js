@@ -28,4 +28,4 @@ export default class BaseView {
   }
 }
 
-export {RenderPosition, createElement, render};
+export {RenderPosition, render};

@@ -1,10 +1,11 @@
+import { getRandomArrayElement } from '../utils/utils.js';
 
-const mockDataPoints = [
+const mockPoints = [
   {
     id: 'f1',
     basePrice: 1100,
     dateFrom: '2019-07-10T22:55:56.845Z',
-    dateTo: '2019-07-11T11:22:13.375Z',
+    dateTo: '2019-08-11T11:22:13.375Z',
     destination: 'bf5',
     isFavorite: false,
     offers: [
@@ -17,8 +18,8 @@ const mockDataPoints = [
   {
     id: 'f2',
     basePrice: 500,
-    dateFrom: '2019-07-13T22:55:56.845Z',
-    dateTo: '2019-07-15T11:22:13.375Z',
+    dateFrom: '2019-07-13T19:30:56.845Z',
+    dateTo: '2019-07-14T10:15:13.375Z',
     destination: 'cf2',
     isFavorite: true,
     offers: [
@@ -30,8 +31,8 @@ const mockDataPoints = [
   {
     id: 'f3',
     basePrice: 12500,
-    dateFrom: '2019-07-13T22:55:56.845Z',
-    dateTo: '2019-07-15T11:22:13.375Z',
+    dateFrom: '2019-07-13T10:30:00.845Z',
+    dateTo: '2019-07-13T11:20:00.375Z',
     destination: 'fe2',
     isFavorite: false,
     offers: [],
@@ -39,12 +40,6 @@ const mockDataPoints = [
   }
 ];
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-function getRandomTask() {
-  return getRandomArrayElement(mockDataPoints);
-}
+const getRandomPoints = () => Array.from({ length: 3 }, () => getRandomArrayElement(mockPoints));
 
-
-export { getRandomTask };
+export { getRandomPoints };

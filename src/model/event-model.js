@@ -1,23 +1,17 @@
-import { getRandomTask } from '../mock/mock-point-data.js';
-import { mockOffers } from '../mock/mock-offers-data.js';
-import {mockDestinations} from '../mock/mock-destinations-data.js';
+import { getRandomPoints } from '../mock/point.js';
+import { getMockOffers } from '../mock/offers.js';
+import {getMockDestinations} from '../mock/destinations.js';
 
-export default class PointModel {
-  #offersData = mockOffers;
-  #pointData = Array.from({ length: 3 }, getRandomTask);
-  #destinationsData = mockDestinations;
+export default class EventModel {
+  #offers = getMockOffers();
+  #points = getRandomPoints();
+  #destinations = getMockDestinations();
 
-
-  get points() {
-    return this.#pointData;
-  }
-
-  get offers() {
-    return this.#offersData;
-  }
-
-  get destinations(){
-    return this.#destinationsData;
-
+  get retrieveAllData() {
+    return {
+      points       :  [...this.#points],
+      offers       :  [...this.#offers],
+      destinations :  [...this.#destinations],
+    };
   }
 }

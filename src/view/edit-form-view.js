@@ -1,42 +1,50 @@
 import BaseView from '../render';
 import { POINT_TYPES, CITIES } from '../const';
+import { findByKey } from '../utils/utils';
 
-const createAddPointTypePointTemplate = () => POINT_TYPES.map((type)=> `<div class="event__type-item">
+const createTypesEventTemplate = () => POINT_TYPES.map((type)=> `<div class="event__type-item">
 <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
 <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
 </div> `).join('');
 
-const createCitie = () => CITIES.map((citie) => `<option value="${citie}"></option>`).join('');
+const createCitiesTemplate = () => CITIES.map((city) => `<option value="${city}"></option>`).join('');
 
-const renderOfferEdit = (mockPoint, mockOffers) => {
-  const { offers } = mockOffers;
+const renderOffersSelector = (offers, isChecked) => {
+  const { id, title, price } = offers;
+
   return `
-      <section class="event__section event__section--offers">
-          <h3 class="event__section-title event__section-title--offers">Offers</h3>
+    <div class="event__offer-selector">
+        <input class="event__offer-checkbox visually-hidden" id="offer-${id}" type="checkbox" name="event-offer-${id}" ${isChecked ? 'checked' : ''}>
+        <label class="event__offer-label" for="offer-${id}">
+            <span class="event__offer-title">${title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+        </label>
+    </div>
+`;
+};
 
-          <div class="event__available-offers">
-              ${offers.map((offer) => `
-                <div class="event__offer-selector">
-        <input class="event__offer-checkbox visually-hidden" id="offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}"
-        ${mockPoint.offers.includes(offer.id) ? 'checked' : ''}>
-                    <label class="event__offer-label" for="offer-${offer.id}">
-                        <span class="event__offer-title">${offer.title}</span>
-                        &plus;&euro;&nbsp;
-                        <span class="event__offer-price">${offer.price}</span>
-                    </label>
-                </div>`
-  ).join('')}
-         </div>
+const createOffersSection = (mockPoint, mockOffers) => {
+  const { offers } = mockOffers;
+
+  const offersSelector = offers.map((offer) => renderOffersSelector(offer, mockPoint.offers.includes(offer.id))).join('');
+
+  return `
+        <section class="event__section event__section--offers">
+            <h3 class="event__section-title event__section-title--offers">Offers</h3>
+            <div class="event__available-offers">
+                ${offersSelector}
+            </div>
         </section>
-      `;
-};
-const createEditOffersTemplate = (mockPoint, mockOffers) => {
-  const pointTypeOffer = mockOffers.find((offer) => offer.type === mockPoint.type);
-  return pointTypeOffer ? renderOfferEdit(mockPoint, pointTypeOffer) : '';
+    `;
 };
 
+const createOffersTemplate = (mockPoint, mockOffers) => {
+  const pointTypeOffer = findByKey(mockOffers, 'type', mockPoint.type);
+  return pointTypeOffer ? createOffersSection(mockPoint, pointTypeOffer) : '';
+};
 
-const renderDescription = (mockDestinations) => {
+const createDescriptionSection = (mockDestinations) => {
   const { description, pictures } = mockDestinations;
 
   return `
@@ -53,22 +61,23 @@ const renderDescription = (mockDestinations) => {
   </section>`;
 };
 
-const createEditDestinationsTemplate = (mockPoint, mockDestinations) => {
-  const pointTypeOffer = mockDestinations.find((destination) => destination.id === mockPoint.destination);
-  return pointTypeOffer ? renderDescription(pointTypeOffer) : '';
+const createDestinationsTemplate = (mockPoint, mockDestinations) => {
+  //const selectedDestination = mockDestinations.find((destination) => destination.id === mockPoint.destination);
+  const selectedDestination = findByKey(mockDestinations, 'id', mockPoint.destination);
+  return selectedDestination ? createDescriptionSection(selectedDestination) : '';
 };
 
-
-const editPoint = (point, offers, destinations) => {
+const createFormEditTemplate = (point, offers, destinations) => {
   const { type, basePrice } = point;
-  const eventTypeItem = createAddPointTypePointTemplate();
-  const citie = createCitie();
-  const offerComponent = createEditOffersTemplate(point, offers);
-  const destinationComponent = createEditDestinationsTemplate(point, destinations);
 
+  const typesEventTemplate = createTypesEventTemplate();
+  const citiesTemplate = createCitiesTemplate();
+  const offersTemplate = createOffersTemplate(point, offers);
+  const destinationsTemplate = createDestinationsTemplate(point, destinations);
+  const questCoincidence = findByKey(destinations, 'id', point.destination) || '';
 
-  return (`
-  <li class="trip-events__item">
+  return (
+    `<li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -81,8 +90,7 @@ const editPoint = (point, offers, destinations) => {
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
-          ${eventTypeItem}
-
+          ${typesEventTemplate}
         </fieldset>
       </div>
     </div>
@@ -91,9 +99,9 @@ const editPoint = (point, offers, destinations) => {
       <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${questCoincidence.name}" list="destination-list-1">
       <datalist id="destination-list-1">
-        ${citie}
+        ${citiesTemplate}
        </datalist>
     </div>
 
@@ -119,18 +127,14 @@ const editPoint = (point, offers, destinations) => {
       <span class="visually-hidden">Open event</span>
     </button>
   </header>
-  <section class="event__details">
-      ${offerComponent}
-     ${destinationComponent}
-  </section>
+  <section class="event__details"> ${offersTemplate} ${destinationsTemplate} </section>
 </form>
 </li>
   `);
 };
 
-
-export default class EditPointView extends BaseView{
-  constructor({ point, offers, destinations}){
+export default class EditFormtView extends BaseView{
+  constructor({ point, offers, destinations }){
     super();
     this.point = point;
     this.offers = offers;
@@ -138,8 +142,6 @@ export default class EditPointView extends BaseView{
   }
 
   get template() {
-    return editPoint(this.point, this.offers, this.destinations);
+    return createFormEditTemplate(this.point, this.offers, this.destinations);
   }
 }
-
-

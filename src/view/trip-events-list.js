@@ -1,11 +1,10 @@
 import BaseView from '../render';
 
-const createTripEventListTemplate = () => '<ul class="trip-events__list"></ul>';
+const createEventListTemplate = () => '<ul class="trip-events__list"></ul>';
 
-
-export default class EventListView extends BaseView{
+export default class TripEventsList extends BaseView{
   get template() {
-    return createTripEventListTemplate();
+    return createEventListTemplate();
   }
 
 }

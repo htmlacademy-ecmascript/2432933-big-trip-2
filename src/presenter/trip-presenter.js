@@ -1,51 +1,43 @@
 import { eventsContainerElement, tripControlsElement } from '../const';
 import { render } from '../render';
-import EventItemView from '../view/trip-events-item';
-import EventListView from '../view/trip-events-list';
-import EditEventView from '../view/edit-form-view';
-import PointSortView from '../view/point-sort';
-import FilterView from '../view/point-filters';
+import TripEventsItem from '../view/trip-events-item';
+import TripEventsList from '../view/trip-events-list';
+import EditFormView from '../view/edit-form-view';
+import SortEvents from '../view/sort-events';
+import FilterEvents from '../view/filters-events';
 
 export default class TripPresenter {
-  pointList = new EventListView();
-  constructor({boardContainer, pointsModel}){
-    this.boardContainer = boardContainer;
-    this.pointsModel = pointsModel;
+  eventList = new TripEventsList();
+  eventModel = {};
+  container = eventsContainerElement;
+
+  constructor({ eventModel }){
+    //this.container = container;
+    this.eventModel = eventModel;
   }
 
   init(){
-    this.boardPoints = [...this.pointsModel.points];
-    this.boardOffers = [...this.pointsModel.offers];
-    this.boardDestinations = [...this.pointsModel.destinations];
+    const { points, offers, destinations } = this.eventModel.retrieveAllData;
 
+    this.renderSortingAndFilters();
+    this.renderEditEvents(points, offers, destinations);
+    this.renderItemEvents(points, offers, destinations);
+  }
 
-    render(this.pointList, eventsContainerElement);
+  renderEditEvents(points, offers, destinations){
+    return render(new EditFormView({ point: points[0], offers, destinations }), this.eventList.getElement());
+  }
 
-    const editPointView = new EditEventView({
-      point : this.boardPoints[0],
-      offers: this.boardOffers,
-      destinations : this.boardDestinations,
-    });
-
-    render(editPointView, this.pointList.getElement());
-
-    for (let i = 1; i < this.boardPoints.length; i++) {
-      const eventItemView = new EventItemView({
-        point: this.boardPoints[i],
-        offers: this.boardOffers
-      });
-
-      render(eventItemView, this.pointList.getElement());
-
+  renderItemEvents(points, offers, destinations){
+    for (let i = 1; i < points.length; i++){
+      render(new TripEventsItem({ point: points[i], offers, destinations }), this.eventList.getElement());
     }
   }
 
-  getSortPoint(){
-    return render(new PointSortView, eventsContainerElement);
-  }
-
-  getHeaderComponent(){
-    render(new FilterView, tripControlsElement);
+  renderSortingAndFilters() {
+    render(new SortEvents(), eventsContainerElement);
+    render(new FilterEvents(), tripControlsElement);
+    render(this.eventList, this.container);
   }
 
 }

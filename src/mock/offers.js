@@ -67,5 +67,6 @@ const mockOffers = [
   },
 ];
 
+const getMockOffers = () => mockOffers;
 
-export {mockOffers};
+export {getMockOffers};

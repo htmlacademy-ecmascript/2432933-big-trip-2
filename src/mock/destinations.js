@@ -37,6 +37,15 @@ const mockDestinations = [
       },
     ]
   },
+  {
+    id: 'fe2',
+    description: 'Paris, is a beautiful city, a true asian pearl, with crowded streets.',
+    name: 'Paris',
+    pictures: [
+    ]
+  },
 ];
 
-export { mockDestinations };
+const getMockDestinations = () => mockDestinations;
+
+export { getMockDestinations };
