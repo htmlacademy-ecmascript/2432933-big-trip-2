@@ -2,7 +2,6 @@
 
 * Студент: [Maksim  Y](https://up.htmlacademy.ru/ecmascript-individual/2/user/2432933).
 * Наставник: [Сергей Андреев](https://htmlacademy.ru/profile/id812127)
-
 ---
 
 _Не удаляйте и не изменяйте папки и файлы:_
