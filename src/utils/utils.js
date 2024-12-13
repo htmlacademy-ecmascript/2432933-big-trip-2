@@ -4,6 +4,4 @@ const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.
 
 const findByKey = (array, key, value) => array.find((item) => item[key] === value);
 
-
-
 export {getRandomArrayElement, findByKey,};
