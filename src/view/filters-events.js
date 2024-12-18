@@ -1,4 +1,4 @@
-import BaseView from '../render';
+import AbstractView from '../framework/view/abstract-view';
 
 const createFormFiltersTemplate = () => `
 
@@ -30,7 +30,7 @@ const createFormFiltersTemplate = () => `
             </div>
           `;
 
-export default class FilterEvents extends BaseView {
+export default class FilterEvents extends AbstractView {
   get template() {
     return createFormFiltersTemplate();
   }

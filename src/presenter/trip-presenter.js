@@ -1,44 +1,36 @@
 import { eventsContainerElement, tripControlsElement } from '../const';
-import { render } from '../render';
-import TripEventsItem from '../view/trip-events-item';
-import TripEventsList from '../view/trip-events-list';
-import EditFormView from '../view/edit-form-view';
+import { render} from '../framework/render';
 import SortEvents from '../view/sort-events';
 import FilterEvents from '../view/filters-events';
+import EventPoints from './event-points';
 
 export default class TripPresenter {
-  eventList = new TripEventsList();
-  eventModel = {};
+  #eventModel = {};
   container = eventsContainerElement;
+  #eventList = null;
+  #points = null;
+  #offers = null;
+  #destinations = null;
 
-  constructor({ eventModel }){
-    //this.container = container;
-    this.eventModel = eventModel;
+  constructor({ eventModel }) {
+    this.#eventModel = eventModel;
   }
 
-  init(){
-    const { points, offers, destinations } = this.eventModel.retrieveAllData;
+  init() {
+    this.#points = this.#eventModel.allPoints;
+    this.#offers = this.#eventModel.allOffers;
+    this.#destinations = this.#eventModel.allDestinations;
 
-    this.renderSortingAndFilters();
-    this.renderEditEvents(points, offers, destinations);
-    this.renderItemEvents(points, offers, destinations);
+    this.#renderSortingAndFilters();
+
+    this.#eventList = new EventPoints(this.#points, this.#offers, this.#destinations);
+    this.#eventList.init();
   }
 
-  renderEditEvents(points, offers, destinations){
-    return render(new EditFormView({ point: points[0], offers, destinations }), this.eventList.getElement());
-  }
-
-  renderItemEvents(points, offers, destinations){
-    for (let i = 1; i < points.length; i++){
-      render(new TripEventsItem({ point: points[i], offers, destinations }), this.eventList.getElement());
-    }
-  }
-
-  renderSortingAndFilters() {
+  #renderSortingAndFilters() {
     render(new SortEvents(), eventsContainerElement);
     render(new FilterEvents(), tripControlsElement);
-    render(this.eventList, this.container);
   }
-
 }
+
 
