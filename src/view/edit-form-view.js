@@ -1,6 +1,5 @@
-import BaseView from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import { POINT_TYPES, CITIES } from '../const';
-import { findByKey } from '../utils/utils';
 
 const createTypesEventTemplate = () => POINT_TYPES.map((type)=> `<div class="event__type-item">
 <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
@@ -24,10 +23,8 @@ const renderOffersSelector = (offers, isChecked) => {
 `;
 };
 
-const createOffersSection = (mockPoint, mockOffers) => {
-  const { offers } = mockOffers;
-
-  const offersSelector = offers.map((offer) => renderOffersSelector(offer, mockPoint.offers.includes(offer.id))).join('');
+const createOffersSection = (point, offers) => {
+  const offersSelector = offers.map((offer) => renderOffersSelector(offer, point.offers.includes(offer.id))).join('');
 
   return `
         <section class="event__section event__section--offers">
@@ -39,13 +36,10 @@ const createOffersSection = (mockPoint, mockOffers) => {
     `;
 };
 
-const createOffersTemplate = (mockPoint, mockOffers) => {
-  const pointTypeOffer = findByKey(mockOffers, 'type', mockPoint.type);
-  return pointTypeOffer ? createOffersSection(mockPoint, pointTypeOffer) : '';
-};
+const createOffersTemplate = (point, offers) => offers ? createOffersSection(point, offers) : '';
 
-const createDescriptionSection = (mockDestinations) => {
-  const { description, pictures } = mockDestinations;
+const createDescriptionSection = (destinations) => {
+  const { description, pictures } = destinations;
 
   return `
   <section class="event__section  event__section--destination">
@@ -61,11 +55,7 @@ const createDescriptionSection = (mockDestinations) => {
   </section>`;
 };
 
-const createDestinationsTemplate = (mockPoint, mockDestinations) => {
-  //const selectedDestination = mockDestinations.find((destination) => destination.id === mockPoint.destination);
-  const selectedDestination = findByKey(mockDestinations, 'id', mockPoint.destination);
-  return selectedDestination ? createDescriptionSection(selectedDestination) : '';
-};
+const createDestinationsTemplate = (destinations) => destinations ? createDescriptionSection(destinations) : '';
 
 const createFormEditTemplate = (point, offers, destinations) => {
   const { type, basePrice } = point;
@@ -73,8 +63,7 @@ const createFormEditTemplate = (point, offers, destinations) => {
   const typesEventTemplate = createTypesEventTemplate();
   const citiesTemplate = createCitiesTemplate();
   const offersTemplate = createOffersTemplate(point, offers);
-  const destinationsTemplate = createDestinationsTemplate(point, destinations);
-  const questCoincidence = findByKey(destinations, 'id', point.destination) || '';
+  const destinationsTemplate = createDestinationsTemplate(destinations);
 
   return (
     `<li class="trip-events__item">
@@ -99,7 +88,7 @@ const createFormEditTemplate = (point, offers, destinations) => {
       <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${questCoincidence.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${citiesTemplate}
        </datalist>
@@ -123,7 +112,7 @@ const createFormEditTemplate = (point, offers, destinations) => {
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
+    <button class="event__rollup-btn" type="button" data-edit-id="${point.id}">
       <span class="visually-hidden">Open event</span>
     </button>
   </header>
@@ -133,15 +122,19 @@ const createFormEditTemplate = (point, offers, destinations) => {
   `);
 };
 
-export default class EditFormtView extends BaseView{
-  constructor({ point, offers, destinations }){
+export default class EditFormtView extends AbstractView{
+  #points = null;
+  #offers = null;
+  #destinations = null;
+
+  constructor({ points, offers, destinations}){
     super();
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    this.#points = points;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   get template() {
-    return createFormEditTemplate(this.point, this.offers, this.destinations);
+    return createFormEditTemplate(this.#points, this.#offers , this.#destinations);
   }
 }

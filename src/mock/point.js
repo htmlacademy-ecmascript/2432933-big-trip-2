@@ -1,4 +1,4 @@
-import { getRandomArrayElement } from '../utils/utils.js';
+//import { getRandomArrayElement } from '../utils/utils.js';
 
 const mockPoints = [
   {
@@ -40,6 +40,7 @@ const mockPoints = [
   }
 ];
 
-const getRandomPoints = () => Array.from({ length: 3 }, () => getRandomArrayElement(mockPoints));
+//const getRandomPoints = () => Array.from({ length: 3 }, () => (mockPoints));
+const getMockPoits = () => mockPoints;
 
-export { getRandomPoints };
+export { getMockPoits };
