@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
+
 const createFormFiltersTemplate = () => `
 
             <div class="trip-controls__filters">
@@ -30,7 +31,7 @@ const createFormFiltersTemplate = () => `
             </div>
           `;
 
-export default class FilterEvents extends AbstractView {
+export default class FilterEventsView extends AbstractView {
   get template() {
     return createFormFiltersTemplate();
   }
