@@ -4,7 +4,7 @@ const mockPoints = [
     'basePrice': 5169,
     'dateFrom': '2025-02-03T20:16:12.191Z',
     'dateTo': '2025-02-04T14:05:12.191Z',
-    'destination': 'сломанный id',
+    'destination': '30f42674-cfa8-428c-928a-051eb5f92001',
     'isFavorite': false,
     'offers': ['сломанный id'],
     'type': 'sightseeing'
@@ -311,6 +311,6 @@ const mockPoints = [
   }
 ];
 
-const getMockPoits = () => mockPoints;
+const getMockPoints = () => mockPoints;
 
-export { getMockPoits };
+export { getMockPoints };
