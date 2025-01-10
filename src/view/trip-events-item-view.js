@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getDiffDate, getEventDate } from '../utils/formatDate.js';
 
-const createItemOfferTemplate = (offer) => {
+const createEventOfferTemplate = (offer) => {
   const { title, price} = offer;
   return `<li class="event__offer">
                 <span class="event__offer-title">${title}</span> &plus;&euro;&nbsp;
@@ -10,21 +10,16 @@ const createItemOfferTemplate = (offer) => {
 };
 
 const createOffersTemplate = (point, offers) => {
-  const pointeOfferKey = new Set(point.offers);
+  const filteredOffers = offers.filter((offer) => point.offers.includes(offer.id));
 
-  return offers
-    .filter((offer) => pointeOfferKey.has(offer.id))
-    .map((offer) => createItemOfferTemplate(offer))
-    .join('');
-
+  return filteredOffers.map((offer) => createEventOfferTemplate(offer)).join('');
 };
 
-const createEventsTemplate = (point, offers, destinations) =>{
+const createEventsItemTemplate = (point, offers, destinations) =>{
   const { type, basePrice, isFavorite, dateFrom, dateTo } = point;
 
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
-  const offersItem = createOffersTemplate(point, offers);
-  const nameCity = destinations.name;
+  const offersItemTemplate = createOffersTemplate(point, offers);
 
   const dateFromMonthDay = getEventDate(dateFrom, 'MMM D');
   const dateFromHours = getEventDate(dateFrom, 'HH:mm');
@@ -38,7 +33,7 @@ const createEventsTemplate = (point, offers, destinations) =>{
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${nameCity}</h3>
+                <h3 class="event__title">${type} ${destinations.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${dateFrom}">${dateFromHours}</time>
@@ -51,14 +46,14 @@ const createEventsTemplate = (point, offers, destinations) =>{
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
-                <ul class="event__selected-offers"> ${offersItem} </ul>
+                <ul class="event__selected-offers"> ${offersItemTemplate} </ul>
                 <button class="event__favorite-btn  ${favoriteClassName}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
                   </svg>
                 </button>
-                <button class="event__rollup-btn" type="button"  data-id="${point.id}">
+                <button class="event__rollup-btn" type="button"  data-id="${point.id}" data-action='item'>
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
@@ -67,20 +62,20 @@ const createEventsTemplate = (point, offers, destinations) =>{
 
 };
 
-export default class TripEventsItem extends AbstractView {
-  #points = null;
-  #offers = null;
-  #destinations = null;
+export default class TripEventsItemView extends AbstractView {
+  #points = [];
+  #offers = [];
+  #destination = {};
 
-  constructor({ points, offers, destinations}) {
+  constructor({ points, offers, destination }) {
     super();
     this.#points = points;
     this.#offers = offers;
-    this.#destinations = destinations;
+    this.#destination = destination;
   }
 
   get template() {
-    return createEventsTemplate(this.#points, this.#offers , this.#destinations);
+    return createEventsItemTemplate(this.#points, this.#offers , this.#destination);
   }
 
 }

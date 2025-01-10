@@ -1,41 +1,40 @@
-import TripEventsItem from '../view/trip-events-item.js';
-import TripEventsList from '../view/trip-events-list.js';
+import TripEventsItemView from '../view/trip-events-item-view.js';
+import TripEventsList from '../view/trip-events-list-view.js';
 import EditFormView from '../view/edit-form-view.js';
 import { render, replace } from '../framework/render.js';
-import {eventsContainerElement} from '../const.js'; // позже уберу
 
-export default class EventPoints {
+export default class EventPointsPresenter {
   #eventList = null;
   #currentPointId = null;
   #itemsMap = new Map();
-  container = eventsContainerElement;
 
-  constructor(points, offers, destinations){
+  constructor(points, offers, destination, container){
     this.points = points;
     this.offers = offers;
-    this.destinations = destinations;
+    this.destination = destination;
+    this.container = container;
   }
 
   init(){
     this.#initEventList();
-    this.#renderItem();
+    this.#renderEventPoints();
   }
 
-  #renderItem() {
+  #renderEventPoints() {
     this.points.forEach((point) => {
       const eventOffers = this.offers.find((offer) => offer.type === point.type)?.offers || [];
-      const eventDestination = this.destinations.find((destination) => destination.id === point.destination) || [];
+      const eventDestination = this.destination.find((destination) => destination.id === point.destination) || {};
 
-      const item = new TripEventsItem({
+      const item = new TripEventsItemView({
         points: point,
         offers : eventOffers,
-        destinations: eventDestination,
+        destination: eventDestination,
       });
 
       const edit = new EditFormView({
         points: point,
         offers : eventOffers,
-        destinations: eventDestination,
+        destination: eventDestination,
       });
 
       this.#itemsMap.set(point.id, { item, edit });
@@ -45,12 +44,13 @@ export default class EventPoints {
 
   #initEventList() {
     this.#eventList = new TripEventsList({
-      handleEditClick : this.#handleEditClick.bind(this),
-      handleCloseForm : this.#handleCloseForm.bind(this)
+      handleEditClick : (pointId) => this.#handleEditClick(pointId),
+      handleCloseForm : (pointId) => this.#handleCloseForm(pointId)
     });
     render(this.#eventList, this.container);
     this.#eventList.setClickListener();
   }
+
 
   #handleEditClick = (pointId) => {
     if (this.#itemsMap.has(pointId)) {
@@ -67,6 +67,7 @@ export default class EventPoints {
       const { item, edit } = this.#itemsMap.get(pointId);
       replace(item, edit);
       this.#currentPointId = null;
+
       document.removeEventListener('keydown', this.#handleCloseFormEscape);
     }
   };

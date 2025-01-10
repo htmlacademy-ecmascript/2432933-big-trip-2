@@ -28,7 +28,7 @@ const createFormSortTemplate = () => `<form class="trip-events__trip-sort  trip-
           </form>`;
 
 
-export default class SortEvents extends AbstractView {
+export default class SortEventsView extends AbstractView {
   get template() {
     return createFormSortTemplate();
   }

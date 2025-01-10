@@ -1,16 +1,17 @@
-import { eventsContainerElement, tripControlsElement } from '../const';
-import { render} from '../framework/render';
-import SortEvents from '../view/sort-events';
-import FilterEvents from '../view/filters-events';
-import EventPoints from './event-points';
+import { eventsContainerElement } from '../elements.js';
+import { render } from '../framework/render.js';
+import SortEventsView from '../view/sort-events-view.js';
+import EventPointsPresenter from './event-points-presenter.js';
+import FilterPresenter from './filter-presenter.js';
 
 export default class TripPresenter {
   #eventModel = {};
-  container = eventsContainerElement;
+  #container = eventsContainerElement; // ???
   #eventList = null;
-  #points = null;
-  #offers = null;
+  #points = [];
+  #offers = [];
   #destinations = null;
+  #filters = [];
 
   constructor({ eventModel }) {
     this.#eventModel = eventModel;
@@ -23,13 +24,22 @@ export default class TripPresenter {
 
     this.#renderSortingAndFilters();
 
-    this.#eventList = new EventPoints(this.#points, this.#offers, this.#destinations);
-    this.#eventList.init();
+    this.#renderEventList(this.#points, this.#offers, this.#destinations, this.#container);
+    this.#renderFilters(this.#points);
   }
 
   #renderSortingAndFilters() {
-    render(new SortEvents(), eventsContainerElement);
-    render(new FilterEvents(), tripControlsElement);
+    render(new SortEventsView(), eventsContainerElement);
+  }
+
+  #renderEventList(points, offers, destinations, container){
+    this.#eventList = new EventPointsPresenter(points, offers, destinations, container);
+    this.#eventList.init();
+  }
+
+  #renderFilters(points){
+    this.#filters = new FilterPresenter(points);
+    this.#filters.init();
   }
 }
 
