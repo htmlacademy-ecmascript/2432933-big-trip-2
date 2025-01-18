@@ -1,40 +1,30 @@
-import AbstractView from '../framework/view/abstract-view';
+import { eventsListElement } from '../elements';
 
-const createEventListTemplate = () => '<ul class="trip-events__list"></ul>';
-
-export default class TripEventsListView extends AbstractView {
-  constructor({handleEditClick, handleCloseForm}) {
-    super();
+export default class TripEventsListView {
+  constructor({ handleEditClick, handleCloseForm, handleFavorite }) {
     this.handleEditClick = handleEditClick;
     this.handleCloseForm = handleCloseForm;
-  }
-
-  get template() {
-    return createEventListTemplate();
+    this.handleFavorite = handleFavorite;
   }
 
   setClickListener() {
-    this.element?.addEventListener('click', this.#handleClick);
+    eventsListElement.addEventListener('click', this.#handleClick);
   }
 
   #handleClick = (event) => {
-    const target = event.target.closest('.trip-events__item');
-    if (!target){
-      return;
-    }
+    const item = event.target.closest('.trip-events__item');
+    const itemId = item.dataset.item;
+    const favorite = event.target.closest('.event__favorite-btn');
+    const rollup = event.target.classList.contains('event__rollup-btn');
 
-    const itemId = event.target.dataset.id;
-    const editFormId = event.target.dataset.editId;
-    if(itemId){
+    if (rollup) {
       this.handleEditClick(itemId);
     }
 
-    if(editFormId){
-      this.handleCloseForm(editFormId);
+    if (favorite) {
+      this.handleFavorite(itemId);
     }
 
   };
-
 }
-
 

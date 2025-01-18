@@ -6,7 +6,7 @@ const mockPoints = [
     'dateTo': '2025-02-04T14:05:12.191Z',
     'destination': '30f42674-cfa8-428c-928a-051eb5f92001',
     'isFavorite': false,
-    'offers': ['сломанный id'],
+    'offers': ['123423'],
     'type': 'sightseeing'
   },
   {

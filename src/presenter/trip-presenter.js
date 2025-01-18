@@ -1,45 +1,72 @@
-import { eventsContainerElement } from '../elements.js';
-import { render } from '../framework/render.js';
+import { eventsContainerElement, eventsListElement } from '../elements.js';
+import { render, RenderPosition } from '../framework/render.js';
 import SortEventsView from '../view/sort-events-view.js';
 import EventPointsPresenter from './event-points-presenter.js';
-import FilterPresenter from './filter-presenter.js';
+import FiltersPresenter from './filters-presenter.js';
+import NoPointsView from '../view/no-points-view.js';
+
 
 export default class TripPresenter {
   #eventModel = {};
-  #container = eventsContainerElement; // ???
-  #eventList = null;
   #points = [];
   #offers = [];
   #destinations = null;
+  #pointPresenter = null;
   #filters = [];
+  #noPointsComponent = new NoPointsView();
+
+  #tripSortComponent = null;
 
   constructor({ eventModel }) {
     this.#eventModel = eventModel;
   }
 
   init() {
-    this.#points = this.#eventModel.allPoints;
-    this.#offers = this.#eventModel.allOffers;
-    this.#destinations = this.#eventModel.allDestinations;
-
-    this.#renderSortingAndFilters();
-
-    this.#renderEventList(this.#points, this.#offers, this.#destinations, this.#container);
+    this.#renderModel();
     this.#renderFilters(this.#points);
+
+    this.#renderPoints();
   }
 
-  #renderSortingAndFilters() {
-    render(new SortEventsView(), eventsContainerElement);
-  }
-
-  #renderEventList(points, offers, destinations, container){
-    this.#eventList = new EventPointsPresenter(points, offers, destinations, container);
-    this.#eventList.init();
+  #renderSortList() {
+    //  не сделано
+    this.#tripSortComponent = new SortEventsView({});
+    render(this.#tripSortComponent, eventsContainerElement, RenderPosition.BEFOREBEGIN);
   }
 
   #renderFilters(points){
-    this.#filters = new FilterPresenter(points);
+    this.#filters = new FiltersPresenter(points);
     this.#filters.init();
+  }
+
+  /*   renderPoint(point){
+    this.#pointPresenter = new EventPointsPresenter(this.#points, this.#offers, this.#destinations);
+    this.#pointPresenter.init(point);
+    this.#pointPresenter.initEventList()
+  } */
+
+  #renderPoints() {
+    this.#pointPresenter = new EventPointsPresenter(this.#points, this.#offers, this.#destinations, eventsListElement);
+    this.#points.forEach((point) => this.#pointPresenter.init(point));
+    this.#pointPresenter.initEventList();
+    //this.#points.forEach((point) => this.renderPoint(point));
+  }
+
+  #renderNoPoints (){
+    render(this.#noPointsComponent, eventsContainerElement);
+  }
+
+  #renderModel(){
+    this.#points = this.#eventModel.allPoints;
+
+    if (this.#points.length === 0){
+      this.#renderNoPoints();
+      return;
+    }
+
+    this.#renderSortList();
+    this.#offers = this.#eventModel.allOffers;
+    this.#destinations = this.#eventModel.allDestinations;
   }
 }
 
