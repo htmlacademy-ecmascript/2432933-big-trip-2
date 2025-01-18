@@ -6,4 +6,3 @@ const eventModel = new EventModel();
 const tripPresenter = new TripPresenter({eventModel});
 
 tripPresenter.init();
-
