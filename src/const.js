@@ -6,5 +6,6 @@ const SortType = {
   OFFERS : 'offers'
 };
 
+const DEFAULT_SORT_TYPE = SortType.DAY;
 
-export { SortType };
+export { SortType, DEFAULT_SORT_TYPE };

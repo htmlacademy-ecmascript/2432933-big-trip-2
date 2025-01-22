@@ -10,11 +10,12 @@ export default class EventPointsPresenter {
   #eventList = null;
   #pointsComponents = new Map();
 
-  constructor(points, offers, destination, container) {
+  constructor(points, offers, destination, container, onPointsUpdate) {
     this.points = points;
     this.offers = offers;
     this.destination = destination;
     this.container = container;
+    this.onPointsUpdate = onPointsUpdate;
   }
 
   init(point) {
@@ -26,6 +27,7 @@ export default class EventPointsPresenter {
     const eventOffers = this.offers.find((offer) => offer.type === point.type)?.offers || [];
     const eventDestination = this.destination.find((destination) => destination.id === point.destination) || {};
 
+
     this.#itemComponent = new TripEventsItemView({
       points : this.test,
       offers : eventOffers,
@@ -34,13 +36,14 @@ export default class EventPointsPresenter {
 
     this.#editComponent = new EditFormView({
       points : this.test,
-      offers : eventOffers,
+      offers :eventOffers,
       destination : eventDestination,
+      offersAll : this.offers,
+      destinationsAll  : this.destination,
     });
 
     this.#renderComponent(point.id);
     this.#pointsComponents.set(point.id, { item : this.#itemComponent, edit : this.#editComponent });
-
   }
 
   #renderComponent(pointId) {
@@ -60,6 +63,7 @@ export default class EventPointsPresenter {
       handleFavorite  : (id) => this.#handleFavorite(id),
     });
     this.#eventList.setClickListener();
+
   }
 
   #handleEditClick = (pointId) => {
@@ -71,7 +75,6 @@ export default class EventPointsPresenter {
       const { item, edit } = this.#pointsComponents.get(pointId);
       replace(edit, item);
       this.#currentPointId = pointId;
-
       document.addEventListener('keydown', this.#handleCloseFormEscape);
     }
   };
@@ -99,7 +102,8 @@ export default class EventPointsPresenter {
       const updatedPoint = { ...currentPoint, isFavorite: !currentPoint.isFavorite };
 
       this.points = this.points.map((point) => point.id === pointId ? updatedPoint : point);
-      this.#createEventPointComponents(updatedPoint);
+      this.init(updatedPoint);
+      this.onPointsUpdate(this.points);
     }
   };
 
