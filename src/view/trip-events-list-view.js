@@ -1,5 +1,6 @@
 import { eventsListElement } from '../elements';
 
+
 export default class TripEventsListView {
   constructor({ handleEditClick, handleCloseForm, handleFavorite }) {
     this.handleEditClick = handleEditClick;
@@ -13,12 +14,19 @@ export default class TripEventsListView {
 
   #handleClick = (event) => {
     const item = event.target.closest('.trip-events__item');
+
+    if (!item) {
+      return;
+    }
+
     const itemId = item.dataset.item;
     const favorite = event.target.closest('.event__favorite-btn');
     const rollup = event.target.classList.contains('event__rollup-btn');
 
+
     if (rollup) {
       this.handleEditClick(itemId);
+      return;
     }
 
     if (favorite) {
