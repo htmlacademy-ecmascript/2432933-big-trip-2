@@ -63,19 +63,19 @@ const createEventsItemTemplate = (point, offers, destinations) =>{
 };
 
 export default class TripEventsItemView extends AbstractView {
-  #points = [];
+  #point = {};
   #offers = [];
   #destination = {};
 
-  constructor({ points, offers, destination }) {
+  constructor({ point, offers, destination }) {
     super();
-    this.#points = points;
+    this.#point = point;
     this.#offers = offers;
     this.#destination = destination;
   }
 
   get template() {
-    return createEventsItemTemplate(this.#points, this.#offers , this.#destination);
+    return createEventsItemTemplate(this.#point, this.#offers , this.#destination);
   }
 
 }

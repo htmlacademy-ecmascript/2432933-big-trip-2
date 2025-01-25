@@ -184,7 +184,8 @@ export default class EditFormView extends AbstractStatefulView {
     evt.preventDefault();
     const selectedType = evt.target.value;
     const newOffers = this.#offersAll.find((offer) => offer.type === selectedType)?.offers || [];
-    this.#offers = newOffers;
+    //this.#offers = newOffers;
+console.log(this.#offers);
 
     this.updateElement({
       type : selectedType,
