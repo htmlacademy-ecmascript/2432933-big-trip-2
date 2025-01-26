@@ -3,17 +3,15 @@ import { render, RenderPosition } from '../framework/render.js';
 import { DEFAULT_SORT_TYPE } from '../const.js';
 import { sortItems, getSortTypes } from '../utils/sorting.js';
 import SortEventsView from '../view/sort-events-view.js';
-import PointsPresenter from './points-presenter.js';
+import PointPresenter from './point-presenter.js';
 //import FiltersPresenter from './filters-presenter.js';
-//import NoPointsView from '../view/no-points-view.js';
-import TripEventsList from '../view/trip-events-list-view.js';
+//import NoPointsView from '../view/no-points-view.js';git
+import TripEventsListView from '../view/trip-events-list-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class TripPresenter {
   #eventModel = {};
   #points = [];
-  #offers = [];
-  #destinations = null;
   #pointPresenter = new Map();
   #listView = null;
   #tripSortComponent = null;
@@ -25,15 +23,23 @@ export default class TripPresenter {
   }
 
   init() {
-    this.#renderModel();
+    this.#points = this.#eventModel.allPoints;
     this.tripEventsListInit();
     this.#renderPoints();
+    this.#renderSortList();
   }
 
   #handleFavorite = (itemId) => {
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (pointPresenter) {
-      pointPresenter.toggleFavorite();
+      //const currentPoint = pointPresenter.point;
+      console.log('handleFavorite');
+
+      // const updatedPoint = { ...currentPoint, isFavorite: !currentPoint.isFavorite };
+      const updatedPoint = pointPresenter.toggleFavorite;
+      console.log(updatedPoint);
+
+      this.#handleViewAction(UserAction.UPDATE_TASK, UpdateType.MINOR, updatedPoint);
     }
   };
 
@@ -46,7 +52,7 @@ export default class TripPresenter {
   };
 
   tripEventsListInit(){
-    this.#listView = new TripEventsList({
+    this.#listView = new TripEventsListView({
       handleFavorite : this.#handleFavorite,
       handleEditClick : this.#handleEditClick,
     });
@@ -55,15 +61,22 @@ export default class TripPresenter {
 
   #renderPoints() {
     this.#points.forEach((point) => {
-      const pointPresenter = new PointsPresenter({
+      const offers = this.#eventModel.getOffers(point);
+      const eventDestination = this.#eventModel.getDestination(point);
+
+      const pointPresenter = new PointPresenter({
         container : eventsListElement,
-        onDataChange : this.#handleViewAction,
+        offers : offers,
+        destinations : eventDestination
+        //onDataChange : this.#handleViewAction,
       });
 
-      const offers = this.#offers.find((offer) => offer.type === point.type)?.offers || [];
-      const eventDestination = this.#destinations.find((destination) => destination.id === point.destination) || {};
+      /* const offers = this.#eventModel.getOffers(point);
+      const eventDestination = this.#eventModel.getDestination(point); */
 
-      pointPresenter.init(point, offers, eventDestination);
+      pointPresenter.init(point);
+      console.log('renderPoints' , point);
+
       this.#pointPresenter.set(point.id, pointPresenter);
     });
   }
@@ -71,15 +84,16 @@ export default class TripPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.MINOR:
-        this.#updatePoint(data);
+        console.log('handleModelEvent', data.id);
+        this.#pointPresenter.get(data.id).init(data);
+        break;
+
+      case UpdateType.MAJOR:
+        console.log('test', updateType);
         break;
     }
   };
 
-  #clearBoard(){
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
-  }
 
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
@@ -90,20 +104,11 @@ export default class TripPresenter {
 
   };
 
-  #updatePoint(updatedPoint) {
-    const pointPresenter = this.#pointPresenter.get(updatedPoint.id);
-    if (pointPresenter) {
-      const offers = this.#offers.find((offer) => offer.type === updatedPoint.type)?.offers || [];
-      const destination = this.#destinations.find((dest) => dest.id === updatedPoint.destination) || {};
-      pointPresenter.update(updatedPoint, offers, destination);
-    }
-  }
 
-  #renderModel(){
-    this.#points = this.#eventModel.allPoints;
-    this.#renderSortList();
-    this.#offers = this.#eventModel.allOffers;
-    this.#destinations = this.#eventModel.allDestinations;
+
+  #clearBoard(){
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 
   #renderSortList() {
@@ -124,10 +129,9 @@ export default class TripPresenter {
 
   #sortPoints = (sortType) => {
     this.#currentSortType = sortType;
-
     const points = this.#eventModel.allPoints;
-    this.#points = sortItems(this.#currentSortType, points);
 
+    this.#points = sortItems(this.#currentSortType, points);
     this.#clearBoard();
     this.#renderPoints();
   };

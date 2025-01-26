@@ -22,16 +22,30 @@ export default class EventModel extends Observable{
   }
 
   updatePoint(type, updatedPoint) {
-    const index = this.#points.findIndex((point) => point.id === updatedPoint.id);
-    if (index !== -1) {
-      this.#points = [
-        ...this.#points.slice(0, index),
-        updatedPoint,
-        ...this.#points.slice(index + 1),
-      ];
-      this._notify(type, updatedPoint); // Уведомляем подписчиков
-      //console.log(this.#points);
+    console.log('updatePoint');
 
+    const index = this.#points.findIndex((point) => point.id === updatedPoint.id);
+    if (index === -1){
+      return;
     }
+
+    this.#points = [
+      ...this.#points.slice(0, index),
+      updatedPoint,
+      ...this.#points.slice(index + 1),
+    ];
+
+    console.log(111 , 'updatePoint  in EventModel ',this.#points);
+    this._notify(type, updatedPoint); // Уведомляем подписчиков
+    console.log('updatePoint  in EventModel ',this.#points);
+  }
+
+  getOffers(point){
+    return this.allOffers.find((offer) => offer.type === point.type)?.offers || [];
+  }
+
+
+  getDestination(point){
+    return this.allDestinations.find((destination) => destination.id === point.destination) || {};
   }
 }

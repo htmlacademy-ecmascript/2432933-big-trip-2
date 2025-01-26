@@ -311,6 +311,51 @@ const mockPoints = [
   }
 ];
 
-const getMockPoints = () => mockPoints;
+const mockPoints2 = [
+  {
+    'isFavorite': false,
+    'id': 'd22c853d-5f3e-4187-a1ef-1fa3ebde7d66',
+    'basePrice': 544,
+    'dateFrom': '2025-02-07T12:59:12.191Z',
+    'dateTo': '2025-02-09T02:21:12.191Z',
+    'destination': 'f64c9d2d-f682-4ff9-8412-8a03a02f09b4',
+    'offers': [
+      '2a8df86f-b88a-4b3e-9662-25731634857e',
+      '3c16359c-9865-4ce2-becd-4277c8661529',
+
+    ],
+    'type': 'ship'
+  },
+  {
+    'isFavorite': false,
+    'id': '20c88efa-ca36-45ef-962d-795e98f69e27',
+    'basePrice': 1367,
+    'dateFrom': '2025-02-12T13:29:12.191Z',
+    'dateTo': '2025-02-13T00:39:12.191Z',
+    'destination': '8ab7f907-f123-4067-96e9-ee6c485b33c0',
+    'offers': [
+      '576a5f71-9edd-4c62-8638-694c4e1aac95',
+      '63db7d1a-e8a4-44a8-98ec-a3d170ee4bec',
+      '985b7718-dd35-41f2-873b-51f31398f7cd'
+    ],
+    'type': 'train'
+  },
+  {
+    'isFavorite': true,
+    'id': 'd6ffe846-36de-4cae-a3a9-04abdf168771',
+    'basePrice': 5468,
+    'dateFrom': '2025-02-10T08:12:12.191Z',
+    'dateTo': '2025-02-12T18:21:12.191Z',
+    'destination': '7aea23ac-a75c-4d4b-b476-912893a3c214',
+    'offers': [
+      '7ca1faf1-97da-489e-85a5-6171591039fd',
+      '0024375c-b547-42d6-ad64-2797b2e18127',
+      '5319a082-cf1d-4a30-9f5e-07e735991678'
+    ],
+    'type': 'taxi'
+  },
+
+];
+const getMockPoints = () => mockPoints2;
 
 export { getMockPoints };
