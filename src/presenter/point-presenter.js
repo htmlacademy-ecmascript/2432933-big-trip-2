@@ -3,11 +3,11 @@ import EditFormView from '../view/edit-form-view.js';
 import { render, replace, remove } from '../framework/render.js';
 
 export default class PointPresenter {
+  currentPointId = null;
   #itemComponent = null;
   #editComponent = null;
-  //#point = null;
-  #offers = null;
   #point = null;
+  #offers = null;
   #destinations = null;
 
   constructor({container, offers, destinations,}) {
@@ -21,6 +21,7 @@ export default class PointPresenter {
 
     const prevPointComponent = this.#itemComponent;
     const prevPointEditComponent = this.#editComponent;
+
     this.#itemComponent = new TripEventsItemView({
       point : this.#point,
       offers : this.#offers,
@@ -39,17 +40,11 @@ export default class PointPresenter {
     }
 
     replace(this.#itemComponent, prevPointComponent);
-    console.log('init', this.#point);
+    //console.log('init', this.#point);
 
     remove(prevPointComponent);
     remove(prevPointEditComponent);
   }
-
-  update(point, offers, destination) {
-    console.log('update in POINTPRESENTER', point);
-    this.init(point, offers, destination);
-  }
-
 
   get toggleFavorite() {
     console.log('toggleFavorite');
@@ -59,14 +54,27 @@ export default class PointPresenter {
     };
   }
 
-  toggleEditMode() {
+  toggleEditMode(id) {
+
+
+    this.currentPointId = id;
     replace(this.#editComponent, this.#itemComponent);
+    console.log('toggleEditMode',this.currentPointId);
+
+  }
+
+
+  closeEditMode(id) {
+    console.log(id);
+
+    this.currentPointId = null;
+    replace(this.#itemComponent, this.#editComponent);
+
   }
 
   destroy() {
-    if (this.#itemComponent) {
-      remove(this.#itemComponent);
-    }
+    remove(this.#itemComponent);
+    remove(this.#editComponent);
   }
 
 }

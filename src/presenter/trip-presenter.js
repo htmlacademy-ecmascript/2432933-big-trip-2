@@ -9,6 +9,8 @@ import PointPresenter from './point-presenter.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
+import ListPresenter from './list-presenter.js';
+
 export default class TripPresenter {
   #eventModel = {};
   #points = [];
@@ -16,6 +18,7 @@ export default class TripPresenter {
   #listView = null;
   #tripSortComponent = null;
   #currentSortType = DEFAULT_SORT_TYPE;
+  #currentActiveFormId = null; // Храним ID текущей активной формы
 
   constructor({ eventModel }) {
     this.#eventModel = eventModel;
@@ -24,39 +27,63 @@ export default class TripPresenter {
 
   init() {
     this.#points = this.#eventModel.allPoints;
-    this.tripEventsListInit();
+    //this.tripEventsListInit();
+    this.test()
     this.#renderPoints();
     this.#renderSortList();
   }
 
-  #handleFavorite = (itemId) => {
+  test(){
+    this.#listView = new ListPresenter({
+      pointPresenter: this.#pointPresenter,
+      handleViewAction: this.#handleViewAction,
+    });
+    this.#listView.init()
+  }
+
+  /* #handleFavorite = (itemId) => {
     const pointPresenter = this.#pointPresenter.get(itemId);
-    if (pointPresenter) {
-      //const currentPoint = pointPresenter.point;
-      console.log('handleFavorite');
-
-      // const updatedPoint = { ...currentPoint, isFavorite: !currentPoint.isFavorite };
-      const updatedPoint = pointPresenter.toggleFavorite;
-      console.log(updatedPoint);
-
-      this.#handleViewAction(UserAction.UPDATE_TASK, UpdateType.MINOR, updatedPoint);
+    if (!pointPresenter){
+      return;
     }
-  };
-
-  #handleEditClick = (itemId) => {
-    const pointPresenter = this.#pointPresenter.get(itemId);
-    if (pointPresenter) {
-      pointPresenter.toggleEditMode();
-    }
-
+    console.log('handleFavorite');
+    const updatedPoint = pointPresenter.toggleFavorite;
+    this.#handleViewAction(UserAction.UPDATE_POINT, UpdateType.PATCH, updatedPoint);
   };
 
   tripEventsListInit(){
     this.#listView = new TripEventsListView({
-      handleFavorite : this.#handleFavorite,
-      handleEditClick : this.#handleEditClick,
+      handleFavorite  : this.#handleFavorite,
+      handleEditClick : this.#handleOpenFormEdit,
+      handleCloseForm : this.#handleCloseFormEdit
     });
   }
+
+  #handleOpenFormEdit = (itemId) => {
+    // Закрываем текущую активную форму, если она есть
+    if (this.#currentActiveFormId !== null) {
+      this.closeForm(this.#currentActiveFormId);
+    }
+
+    // Открываем новую форму
+    const pointPresenter = this.#pointPresenter.get(itemId);
+    if (!pointPresenter) {
+      return;
+    }
+    pointPresenter.toggleEditMode(itemId);
+    this.#currentActiveFormId = itemId; // Обновляем ID текущей активной формы
+  };
+
+  #handleCloseFormEdit = (itemId) => {
+    const pointPresenter = this.#pointPresenter.get(itemId);
+    if (!pointPresenter) {
+      return;
+    }
+    console.log('closeForm');
+    pointPresenter.closeEditMode(itemId);
+    this.#currentActiveFormId = null; // Сбрасываем ID текущей активной формы
+  }; */
+
 
 
   #renderPoints() {
@@ -70,40 +97,47 @@ export default class TripPresenter {
         destinations : eventDestination
         //onDataChange : this.#handleViewAction,
       });
-
-      /* const offers = this.#eventModel.getOffers(point);
-      const eventDestination = this.#eventModel.getDestination(point); */
-
       pointPresenter.init(point);
-      console.log('renderPoints' , point);
+      //console.log('renderPoints' , point);
 
       this.#pointPresenter.set(point.id, pointPresenter);
     });
   }
 
   #handleModelEvent = (updateType, data) => {
-    switch (updateType) {
-      case UpdateType.MINOR:
-        console.log('handleModelEvent', data.id);
-        this.#pointPresenter.get(data.id).init(data);
-        break;
 
-      case UpdateType.MAJOR:
-        console.log('test', updateType);
-        break;
+    if(!updateType){
+      return;
     }
+    const updateHandlers = {
+      [UpdateType.PATCH] : () => this.#pointPresenter.get(data.id).init(data),
+      [UpdateType.MINOR] : () => {
+        this.#clearBoard();
+        this.#renderPoints();
+      }
+
+    };
+    console.log('handleModelEvent');
+
+    updateHandlers[updateType]();
+
   };
 
 
   #handleViewAction = (actionType, updateType, update) => {
-    switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this.#eventModel.updatePoint(updateType, update);
-        break;
+    console.log('handleViewAction');
+
+    if(!actionType){
+      return;
     }
 
-  };
+    const action = {
+      [UserAction.UPDATE_POINT] : () => this.#eventModel.updatePoint(updateType, update),
 
+    };
+
+    action[actionType]();
+  };
 
 
   #clearBoard(){

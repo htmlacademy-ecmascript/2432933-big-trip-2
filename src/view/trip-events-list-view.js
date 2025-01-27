@@ -22,9 +22,8 @@ export default class TripEventsListView {
 
     const itemId = item.dataset.item;
     const favorite = event.target.closest('.event__favorite-btn');
-    const rollup = event.target.classList.contains('event__rollup-btn');
-
-
+    const rollup = event.target.classList.contains('item');
+    const rollupEdit = event.target.classList.contains('edit');
     if (rollup) {
       this.handleEditClick(itemId);
       return;
@@ -32,6 +31,11 @@ export default class TripEventsListView {
 
     if (favorite) {
       this.handleFavorite(itemId);
+    }
+
+    if (rollupEdit) {
+      this.handleCloseForm(itemId);
+
     }
 
   };

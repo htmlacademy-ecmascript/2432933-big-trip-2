@@ -36,7 +36,10 @@ export default class EventModel extends Observable{
     ];
 
     console.log(111 , 'updatePoint  in EventModel ',this.#points);
+    console.log('Model  первый type', type );
+    console.log('Model updatedPoint второй аргумент ', updatedPoint );
     this._notify(type, updatedPoint); // Уведомляем подписчиков
+
     console.log('updatePoint  in EventModel ',this.#points);
   }
 

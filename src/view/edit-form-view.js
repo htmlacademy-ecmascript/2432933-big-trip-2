@@ -93,7 +93,7 @@ const createFormEditTemplate = (point, offers, destinations) => {
   const timeTemplate = createGroupTimeTemplate(dateFrom, dateTo);
 
   return (
-    `<li class="trip-events__item">
+    `<li class="trip-events__item" data-item="${point.id}">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -132,7 +132,7 @@ const createFormEditTemplate = (point, offers, destinations) => {
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
+    <button class="event__rollup-btn edit" type="button">
       <span class="visually-hidden">Open event</span>
     </button>
   </header>
