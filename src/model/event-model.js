@@ -1,7 +1,6 @@
 import { getMockPoints } from '../mock/point.js';
 import { getMockOffers } from '../mock/offers.js';
 import {getMockDestinations} from '../mock/destinations.js';
-
 import Observable from '../framework/observable.js';
 
 export default class EventModel extends Observable{
@@ -22,8 +21,6 @@ export default class EventModel extends Observable{
   }
 
   updatePoint(type, updatedPoint) {
-    console.log('updatePoint');
-
     const index = this.#points.findIndex((point) => point.id === updatedPoint.id);
     if (index === -1){
       return;
@@ -35,20 +32,7 @@ export default class EventModel extends Observable{
       ...this.#points.slice(index + 1),
     ];
 
-    console.log(111 , 'updatePoint  in EventModel ',this.#points);
-    console.log('Model  первый type', type );
-    console.log('Model updatedPoint второй аргумент ', updatedPoint );
-    this._notify(type, updatedPoint); // Уведомляем подписчиков
-
-    console.log('updatePoint  in EventModel ',this.#points);
+    this._notify(type, updatedPoint);
   }
 
-  getOffers(point){
-    return this.allOffers.find((offer) => offer.type === point.type)?.offers || [];
-  }
-
-
-  getDestination(point){
-    return this.allDestinations.find((destination) => destination.id === point.destination) || {};
-  }
 }

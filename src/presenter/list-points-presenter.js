@@ -1,26 +1,24 @@
 import TripEventsListView from '../view/trip-events-list-view.js';
-import { render, replace, remove } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
+
 export default class ListPresenter {
-  #listView = null;
-  #container = null;
-  #pointPresenter = null; // Хранилище всех презентеров
-  #handleViewAction = null; // Функция для обработки действий
+  #pointPresenter = null;
+  #handleViewAction = null;
   #currentActiveFormId = null;
 
   constructor({ pointPresenter, handleViewAction }) {
-
     this.#pointPresenter = pointPresenter;
     this.#handleViewAction = handleViewAction;
   }
 
   init() {
-    this.#listView = new TripEventsListView({
-      handleFavorite: this.#handleFavorite,
-      handleEditClick: this.#handleOpenFormEdit,
-      handleCloseForm: this.#handleCloseFormEdit,
+    const listView = new TripEventsListView({
+      handleFavorite      : this.#handleFavorite,
+      handleOpenFormEdit  : this.#handleOpenFormEdit,
+      handleCloseFormEdit : this.#handleCloseFormEdit,
     });
     //render(this.#listView, this.#container);
+    listView.setClickListener();
   }
 
   #handleFavorite = (itemId) => {
@@ -28,21 +26,23 @@ export default class ListPresenter {
     if (!pointPresenter) {
       return;
     }
-    console.log('handleFavorite');
+
     const updatedPoint = pointPresenter.toggleFavorite;
     this.#handleViewAction(UserAction.UPDATE_POINT, UpdateType.PATCH, updatedPoint);
   };
 
   #handleOpenFormEdit = (itemId) => {
     if (this.#currentActiveFormId !== null) {
-      this.#closeForm(this.#currentActiveFormId);
+      this.#handleCloseFormEdit(this.#currentActiveFormId);
     }
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (!pointPresenter) {
       return;
     }
-    pointPresenter.toggleEditMode(itemId);
+
+    pointPresenter.openEditMode(itemId);
     this.#currentActiveFormId = itemId;
+    document.addEventListener('keydown', this.#handleCloseFormEditEscape);
   };
 
   #handleCloseFormEdit = (itemId) => {
@@ -50,17 +50,19 @@ export default class ListPresenter {
     if (!pointPresenter) {
       return;
     }
-    console.log('closeForm');
-    pointPresenter.closeEditMode(itemId);
+
+    pointPresenter.reset();
+    pointPresenter.closeEditMode();
+
     this.#currentActiveFormId = null;
+    document.removeEventListener('keydown', this.#handleCloseFormEditEscape);
   };
 
-  #closeForm(itemId) {
-    const pointPresenter = this.#pointPresenter.get(itemId);
-    if (!pointPresenter) {
-      return;
+  #handleCloseFormEditEscape = (event) => {
+    if (event.key === 'Escape'){
+      if (this.#currentActiveFormId !== null) {
+        this.#handleCloseFormEdit(this.#currentActiveFormId);
+      }
     }
-    pointPresenter.closeEditMode(itemId);
-    this.#currentActiveFormId = null;
-  }
+  };
 }

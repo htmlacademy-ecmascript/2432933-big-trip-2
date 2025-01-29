@@ -20,9 +20,17 @@ const UpdateType = {
 
 const DEFAULT_SORT_TYPE = SortType.DAY;
 
+const configFlatpickr = {
+  dateFormat  : 'd/m/y H:i',
+  enableTime  : true,
+  'time_24hr' : true,
+  locale      : { firstDayOfWeek: 1 },
+};
+
 export {
   SortType,
   DEFAULT_SORT_TYPE,
   UserAction,
-  UpdateType
+  UpdateType,
+  configFlatpickr
 };

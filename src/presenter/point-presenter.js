@@ -3,14 +3,13 @@ import EditFormView from '../view/edit-form-view.js';
 import { render, replace, remove } from '../framework/render.js';
 
 export default class PointPresenter {
-  currentPointId = null;
   #itemComponent = null;
   #editComponent = null;
   #point = null;
   #offers = null;
   #destinations = null;
 
-  constructor({container, offers, destinations,}) {
+  constructor({ container, offers, destinations }) {
     this.container = container;
     this.#offers = offers;
     this.#destinations = destinations;
@@ -24,14 +23,14 @@ export default class PointPresenter {
 
     this.#itemComponent = new TripEventsItemView({
       point : this.#point,
-      offers : this.#offers,
-      destination : this.#destinations,
+      offers: this.#offers,
+      destinations : this.#destinations,
     });
 
     this.#editComponent = new EditFormView({
-      points : this.#point,
-      offers : this.#offers,
-      destination : this.#destinations,
+      point : this.#point,
+      offers: this.#offers,
+      destinations : this.#destinations,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -40,33 +39,24 @@ export default class PointPresenter {
     }
 
     replace(this.#itemComponent, prevPointComponent);
-    //console.log('init', this.#point);
-
     remove(prevPointComponent);
     remove(prevPointEditComponent);
   }
 
+
   get toggleFavorite() {
-    console.log('toggleFavorite');
     return {
       ...this.#point,
       isFavorite: !this.#point.isFavorite,
     };
   }
 
-  toggleEditMode(id) {
-
-
-    this.currentPointId = id;
+  openEditMode() {
     replace(this.#editComponent, this.#itemComponent);
-    console.log('toggleEditMode',this.currentPointId);
-
   }
 
 
-  closeEditMode(id) {
-    console.log(id);
-
+  closeEditMode() {
     this.currentPointId = null;
     replace(this.#itemComponent, this.#editComponent);
 
@@ -77,5 +67,7 @@ export default class PointPresenter {
     remove(this.#editComponent);
   }
 
+  reset () {
+    this.#editComponent.reset(this.#point);
+  }
 }
-
