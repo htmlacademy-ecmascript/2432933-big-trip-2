@@ -23,13 +23,13 @@ export default class PointPresenter {
 
     this.#itemComponent = new TripEventsItemView({
       point : this.#point,
-      offers: this.#offers,
+      offers : this.#offers,
       destinations : this.#destinations,
     });
 
     this.#editComponent = new EditFormView({
       point : this.#point,
-      offers: this.#offers,
+      offers : this.#offers,
       destinations : this.#destinations,
     });
 

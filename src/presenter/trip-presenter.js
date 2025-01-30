@@ -9,7 +9,7 @@ import PointPresenter from './point-presenter.js';
 
 import { UserAction, UpdateType } from '../const.js';
 
-import ListPresenter from './list-points-presenter.js';
+import ListPointsPresenter from './list-points-presenter.js';
 
 export default class TripPresenter {
   #eventModel = {};
@@ -42,7 +42,7 @@ export default class TripPresenter {
   }
 
   #renderPointsList(){
-    this.#listView = new ListPresenter({
+    this.#listView = new ListPointsPresenter({
       pointPresenter: this.#pointPresenter,
       handleViewAction: this.#handleViewAction,
     });
@@ -55,9 +55,6 @@ export default class TripPresenter {
       const pointPresenter = new PointPresenter({
         container : eventsListElement,
         offers : this.#offers,
-        /* тут получается я передаю все offers в PointPresenter, который в свою очередь передает во Вью все массивы destinations  и offers.
-         получается что все данные массивов со всеми свойтсвами хранится и тут и там. Нормально ли это ? или какой-то коллбэк лучше прокинуть
-         что бы дергать данные отсюда или так можно оставить ?  */
         destinations : this.#destinations,
       });
 

@@ -1,7 +1,7 @@
 import TripEventsListView from '../view/trip-events-list-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
-export default class ListPresenter {
+export default class ListPointsPresenter {
   #pointPresenter = null;
   #handleViewAction = null;
   #currentActiveFormId = null;
@@ -59,10 +59,8 @@ export default class ListPresenter {
   };
 
   #handleCloseFormEditEscape = (event) => {
-    if (event.key === 'Escape'){
-      if (this.#currentActiveFormId !== null) {
-        this.#handleCloseFormEdit(this.#currentActiveFormId);
-      }
+    if (event.key === 'Escape' && this.#currentActiveFormId !== null) {
+      this.#handleCloseFormEdit(this.#currentActiveFormId);
     }
   };
 }

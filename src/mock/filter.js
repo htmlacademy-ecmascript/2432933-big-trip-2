@@ -13,10 +13,10 @@ const isPresentDate = (startDate, endDate) => {
 const isFutureDate = (date) => dayjs(date).isAfter(today);
 
 const filter = {
-  everything: (points) => points,
-  future: (points) => points.filter((point) => isFutureDate(point.dateTo)),
-  present: (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
-  past: (points) => points.filter((point) => isPastDate(point.dateTo)),
+  everything : (points) => points,
+  future     : (points) => points.filter((point) => isFutureDate(point.dateTo)),
+  present    : (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
+  past       : (points) => points.filter((point) => isPastDate(point.dateTo)),
 };
 
 

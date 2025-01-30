@@ -6,7 +6,6 @@ export default class TripEventsListView {
     this.handleOpenFormEdit = handleOpenFormEdit;
     this.handleCloseFormEdit = handleCloseFormEdit;
     this.handleFavorite = handleFavorite;
-    //eventsListElement.addEventListener('click', this.#handleClick);
   }
 
   setClickListener() {
