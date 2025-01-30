@@ -9,7 +9,7 @@ import PointPresenter from './point-presenter.js';
 
 import { UserAction, UpdateType } from '../const.js';
 
-import ListPresenter from './list-points-presenter.js';
+import ListPointsPresenter from './list-points-presenter.js';
 
 export default class TripPresenter {
   #eventModel = {};
@@ -42,7 +42,7 @@ export default class TripPresenter {
   }
 
   #renderPointsList(){
-    this.#listView = new ListPresenter({
+    this.#listView = new ListPointsPresenter({
       pointPresenter: this.#pointPresenter,
       handleViewAction: this.#handleViewAction,
     });
