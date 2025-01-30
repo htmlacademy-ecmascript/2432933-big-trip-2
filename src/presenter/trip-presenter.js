@@ -55,9 +55,6 @@ export default class TripPresenter {
       const pointPresenter = new PointPresenter({
         container : eventsListElement,
         offers : this.#offers,
-        /* тут получается я передаю все offers в PointPresenter, который в свою очередь передает во Вью все массивы destinations  и offers.
-         получается что все данные массивов со всеми свойтсвами хранится и тут и там. Нормально ли это ? или какой-то коллбэк лучше прокинуть
-         что бы дергать данные отсюда или так можно оставить ?  */
         destinations : this.#destinations,
       });
 
