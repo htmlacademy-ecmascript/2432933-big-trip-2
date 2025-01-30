@@ -311,6 +311,7 @@ const mockPoints = [
   }
 ];
 
+
 const getMockPoints = () => mockPoints;
 
 export { getMockPoints };

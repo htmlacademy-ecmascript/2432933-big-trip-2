@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getDiffDate, getEventDate } from '../utils/formatDate.js';
+import { findByKey } from '../utils/utils.js';
 
 const createEventOfferTemplate = (offer) => {
   const { title, price} = offer;
@@ -18,8 +19,12 @@ const createOffersTemplate = (point, offers) => {
 const createEventsItemTemplate = (point, offers, destinations) =>{
   const { type, basePrice, isFavorite, dateFrom, dateTo } = point;
 
+  const offersForType = findByKey(offers, 'type', point.type)?.offers || [];
+  const destinationsForId = findByKey(destinations, 'id', point.destination) || {};
+  const destinationsName = destinationsForId.name || '';
+
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
-  const offersItemTemplate = createOffersTemplate(point, offers);
+  const offersItemTemplate = createOffersTemplate(point, offersForType);
 
   const dateFromMonthDay = getEventDate(dateFrom, 'MMM D');
   const dateFromHours = getEventDate(dateFrom, 'HH:mm');
@@ -33,7 +38,7 @@ const createEventsItemTemplate = (point, offers, destinations) =>{
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${destinations.name}</h3>
+                <h3 class="event__title">${type} ${destinationsName}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${dateFrom}">${dateFromHours}</time>
@@ -53,7 +58,7 @@ const createEventsItemTemplate = (point, offers, destinations) =>{
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
                   </svg>
                 </button>
-                <button class="event__rollup-btn" type="button">
+                <button class="event__rollup-btn event__rollup-btn-item" type="button">
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
@@ -63,19 +68,19 @@ const createEventsItemTemplate = (point, offers, destinations) =>{
 };
 
 export default class TripEventsItemView extends AbstractView {
-  #points = [];
-  #offers = [];
-  #destination = {};
+  #point = {};
+  #offersAll = [];
+  #destinations = [];
 
-  constructor({ points, offers, destination }) {
+  constructor({ point, offers, destinations }) {
     super();
-    this.#points = points;
-    this.#offers = offers;
-    this.#destination = destination;
+    this.#point = point;
+    this.#offersAll = offers;
+    this.#destinations = destinations;
   }
 
   get template() {
-    return createEventsItemTemplate(this.#points, this.#offers , this.#destination);
+    return createEventsItemTemplate(this.#point, this.#offersAll, this.#destinations);
   }
 
 }
