@@ -311,7 +311,47 @@ const mockPoints = [
   }
 ];
 
-
-const getMockPoints = () => mockPoints;
+const mockPoints2 = [
+  {
+    'id': '215d04ec-3e66-423e-89d9-ceb8a0ef9cf8',
+    'basePrice': 7577,
+    'dateFrom': '2025-02-05T09:40:12.191Z',
+    'dateTo': '2025-02-07T01:22:12.191Z',
+    'destination': 'a750b073-183f-4457-8c91-358a1d72c6c0',
+    'isFavorite': false,
+    'offers': [],
+    'type': 'sightseeing'
+  },
+  {
+    'id': 'd22c853d-5f3e-4187-a1ef-1fa3ebde7d66',
+    'basePrice': 9544,
+    'dateFrom': '2025-02-01T13:00:12.191Z',
+    'dateTo'  : '2025-02-01T13:13:25.191Z',
+    'destination': 'f64c9d2d-f682-4ff9-8412-8a03a02f09b4',
+    'isFavorite': false,
+    'offers': [
+      '2a8df86f-b88a-4b3e-9662-25731634857e',
+      '3c16359c-9865-4ce2-becd-4277c8661529',
+      'dbd5513e-fead-405c-a3d1-e5c6421ebea0',
+      '47d98d9a-df0a-4df8-a8a3-a1b3c0dd74be'
+    ],
+    'type': 'ship'
+  },
+  {
+    'id': 'd6ffe846-36de-4cae-a3a9-04abdf168771',
+    'basePrice': 3468,
+    'dateFrom': '2025-02-10T08:12:12.191Z',
+    'dateTo': '2025-02-10T18:21:12.191Z',
+    'destination': '7aea23ac-a75c-4d4b-b476-912893a3c214',
+    'isFavorite': true,
+    'offers': [
+      '7ca1faf1-97da-489e-85a5-6171591039fd',
+      '0024375c-b547-42d6-ad64-2797b2e18127',
+      '5319a082-cf1d-4a30-9f5e-07e735991678'
+    ],
+    'type': 'taxi'
+  },
+]
+const getMockPoints = () => mockPoints2;
 
 export { getMockPoints };

@@ -30,6 +30,7 @@ const createEventsItemTemplate = (point, offers, destinations) =>{
   const dateToHours = getEventDate(dateTo, 'HH:mm');
   const diffDate = getDiffDate(dateFrom, dateTo);
 
+
   return (
     `<li class="trip-events__item" data-item="${point.id}">
               <div class="event">
