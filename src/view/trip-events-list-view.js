@@ -1,6 +1,5 @@
 import { eventsListElement } from '../elements';
 
-
 export default class TripEventsListView {
   constructor({ handleOpenFormEdit, handleCloseFormEdit, handleFavorite }) {
     this.handleOpenFormEdit = handleOpenFormEdit;
@@ -35,7 +34,6 @@ export default class TripEventsListView {
     if (closeFormEdit) {
       this.handleCloseFormEdit(itemId);
     }
-
   };
 }
 

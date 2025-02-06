@@ -1,31 +1,20 @@
 import dayjs from 'dayjs';
-
-const today = dayjs();
-
-const isPastDate = (date) => dayjs(date).isBefore(today);
-
-const isPresentDate = (startDate, endDate) => {
-  const start = dayjs(startDate);
-  const end = dayjs(endDate);
-  return today.isAfter(start) && today.isBefore(end);
-};
-
-const isFutureDate = (date) => dayjs(date).isAfter(today);
+import { FilterType } from '../const';
 
 const filter = {
-  everything : (points) => points,
-  future     : (points) => points.filter((point) => isFutureDate(point.dateTo)),
-  present    : (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
-  past       : (points) => points.filter((point) => isPastDate(point.dateTo)),
+  [FilterType.EVERYTHING] : (points) => points,
+  [FilterType.FUTURE]     : (points) => points.filter((point) => dayjs().isBefore(point.dateFrom)),
+  [FilterType.PRESENT]    : (points) => points.filter((point) => dayjs().isBefore(point.dateFrom) && dayjs().isAfter(point.dateTo)),
+  [FilterType.PAST]       : (points) => points.filter((point) => dayjs().isAfter(point.dateTo)),
 };
 
+const filterPoints = (points, filterType) => filter[filterType](points);
 
-const generateFilter = (points) =>(Object.entries(filter).map(([filterType, filterPoints]) => (
-  {
+const generateFilters = (points) => Object.entries(filter).map(
+  ([filterType, count]) => ({
     type  : filterType,
-    count : filterPoints(points).length,
-  }
-))
+    count : count(points).length,
+  })
 );
 
-export { generateFilter };
+export { generateFilters, filterPoints };

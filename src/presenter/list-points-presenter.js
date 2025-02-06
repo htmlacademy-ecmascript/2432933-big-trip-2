@@ -5,17 +5,19 @@ export default class ListPointsPresenter {
   #pointPresenter = null;
   #handleViewAction = null;
   #currentActiveFormId = null;
+  #handleNewFormMode = null;
 
-  constructor({ pointPresenter, handleViewAction }) {
+  constructor({ pointPresenter, handleViewAction, onFormMode}) {
     this.#pointPresenter = pointPresenter;
     this.#handleViewAction = handleViewAction;
+    this.#handleNewFormMode = onFormMode;
   }
 
   init() {
     const listView = new TripEventsListView({
       handleFavorite      : this.#handleFavorite,
       handleOpenFormEdit  : this.#handleOpenFormEdit,
-      handleCloseFormEdit : this.#handleCloseFormEdit,
+      handleCloseFormEdit : this.handleCloseFormEdit,
     });
     //render(this.#listView, this.#container);
     listView.setClickListener();
@@ -33,19 +35,21 @@ export default class ListPointsPresenter {
 
   #handleOpenFormEdit = (itemId) => {
     if (this.#currentActiveFormId !== null) {
-      this.#handleCloseFormEdit(this.#currentActiveFormId);
+      this.handleCloseFormEdit(this.#currentActiveFormId);
     }
+
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (!pointPresenter) {
       return;
     }
-
     pointPresenter.openEditMode(itemId);
+
     this.#currentActiveFormId = itemId;
+    this.#handleNewFormMode();
     document.addEventListener('keydown', this.#handleCloseFormEditEscape);
   };
 
-  #handleCloseFormEdit = (itemId) => {
+  handleCloseFormEdit = (itemId) => {
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (!pointPresenter) {
       return;
@@ -60,7 +64,11 @@ export default class ListPointsPresenter {
 
   #handleCloseFormEditEscape = (event) => {
     if (event.key === 'Escape' && this.#currentActiveFormId !== null) {
-      this.#handleCloseFormEdit(this.#currentActiveFormId);
+      this.handleCloseFormEdit(this.#currentActiveFormId);
     }
+  };
+
+  resetCurrentActiveFormId = () => {
+    this.#currentActiveFormId = null;
   };
 }

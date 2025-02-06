@@ -80,7 +80,16 @@ const createDescriptionSectionTemplate = (destinations) => {
   </section>` : '';
 };
 
-const createFormEditTemplate = (point, offers, destinations) => {
+const createRollupButtonTemplate = (isNewPoint) => {
+  const f = !isNewPoint ? `<button class="event__rollup-btn event__rollup-btn-edit" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>`
+    : '';
+
+  return f;
+};
+
+const createFormEditTemplate = (point, offers, destinations, isNewPoint = false) => {
   const { type, basePrice, dateFrom, dateTo } = point;
 
   const offersForType = findByKey(offers, 'type', point.type)?.offers || [];
@@ -94,7 +103,9 @@ const createFormEditTemplate = (point, offers, destinations) => {
 
   const destinationsTemplate = createDescriptionSectionTemplate(destinationsForId);
   const timeTemplate = createGroupTimeTemplate(dateFrom, dateTo);
+
   const destinationName = destinationsForId.name ? destinationsForId.name : '';
+  const eventRollupButtonTemplate = createRollupButtonTemplate(isNewPoint);
 
   return (
     `<li class="trip-events__item" data-item="${point.id}">
@@ -135,10 +146,8 @@ const createFormEditTemplate = (point, offers, destinations) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn event__rollup-btn-edit" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
+    <button class="event__reset-btn" type="reset">${isNewPoint ? 'Cancel' : 'Delete'}</button>
+     ${eventRollupButtonTemplate}
   </header>
   <section class="event__details"> ${offersTemplate} ${destinationsTemplate} </section>
 </form>

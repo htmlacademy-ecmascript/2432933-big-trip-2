@@ -1,14 +1,15 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const createFilterItemTemplate = (filter, isChecked) => {
+const createFilterItemTemplate = (filter, currentFilter) => {
   const {type, count} = filter;
   const isDisabled = count === 0;
+
+  const isChecked = currentFilter === type;
 
   return (`
     <div class="trip-filters__filter">
                   <input id="filter-${type}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter"
-                  value="
-                  ${type}"
+                  value="${type}"
                   ${isChecked ? 'checked' : ''}
                   ${isDisabled ? 'disabled' : ''}
                   >
@@ -17,8 +18,8 @@ const createFilterItemTemplate = (filter, isChecked) => {
                 `);
 };
 
-const createFormFiltersTemplate = (filters) => {
-  const filtersItem = filters.map((filter, index) => createFilterItemTemplate(filter, index === 0)).join('');
+const createFormFiltersTemplate = (filters, currentFilter) => {
+  const filtersItem = filters.map((filter) => createFilterItemTemplate(filter, currentFilter)).join('');
 
   return (`
   <div class="trip-controls__filters">
@@ -34,13 +35,27 @@ const createFormFiltersTemplate = (filters) => {
 
 export default class FilterEventsView extends AbstractView {
   #filters = null;
+  #currentFilter = null;
+  #handleFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilter, onFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#currentFilter = currentFilter;
+    this.#handleFilterTypeChange = onFilterTypeChange;
+
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
   }
 
   get template() {
-    return createFormFiltersTemplate(this.#filters);
+    return createFormFiltersTemplate(this.#filters, this.#currentFilter);
   }
+
+  #filterTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    this.#handleFilterTypeChange(evt.target.value);
+  };
 }

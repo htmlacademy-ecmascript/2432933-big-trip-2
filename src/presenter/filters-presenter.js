@@ -1,14 +1,60 @@
 import FilterEventsView from '../view/filters-events-view.js';
-import { render } from '../framework/render';
+import { render, remove, replace } from '../framework/render';
 import { tripControlsElement } from '../elements.js';
-import { generateFilter } from '../mock/filter.js';
+import { generateFilters } from '../mock/filter.js';
+import { UpdateType } from '../const.js';
 
 export default class FiltersPresenter {
-  constructor(points){
-    this.points = points;
+  #eventModel = null;
+  #filtersModel = null;
+  #currentFilter = null;
+  #filterComponent = null;
+
+  constructor({ eventModel, filtersModel }){
+    this.#eventModel = eventModel;
+    this.#filtersModel = filtersModel;
+
+    this.#eventModel.addObserver(this.#handleModelEvent);
+    this.#filtersModel.addObserver(this.#handleModelEvent);
+  }
+
+  get filters() {
+    const points = this.#eventModel.allPoints;
+    const filters = generateFilters(points);
+
+    return filters;
   }
 
   init(){
-    render(new FilterEventsView({ filters: generateFilter(this.points) }), tripControlsElement);
+    this.#currentFilter = this.#filtersModel.currentFilter;
+    const filters = this.filters;
+
+    const prevFilterComponent = this.#filterComponent;
+
+    this.#filterComponent = new FilterEventsView({
+      filters,
+      currentFilter      : this.#currentFilter,
+      onFilterTypeChange : this.#filterChangeHandler,
+    });
+
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, tripControlsElement);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
   }
+
+  #filterChangeHandler = (filterType) => {
+    if (this.#filtersModel.currentFilter === filterType) {
+      return;
+    }
+
+    this.#filtersModel.setFilter(UpdateType.MAJOR, filterType);
+  };
+
+  #handleModelEvent = () => {
+    this.init();
+  };
 }
