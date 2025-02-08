@@ -1,4 +1,3 @@
-//import { eventsListElement } from '../elements';
 import AbstractView from '../framework/view/abstract-view';
 
 const createPointsListTemplate = () => '<ul class="trip-events__list"></ul>';

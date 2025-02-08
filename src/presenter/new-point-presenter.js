@@ -47,7 +47,6 @@ export default class NewPointPresenter {
   }
 
   setSaving() {
-    //console.log(111111);
     this.#newFormPointComponent.updateElement({
       isDisabled : true,
       isSaving   : true,
@@ -68,7 +67,6 @@ export default class NewPointPresenter {
 
   #handleFormSubmit = (point) => {
     this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, point);
-    //this.destroy();
   };
 
   #handleCancelClick = () => {

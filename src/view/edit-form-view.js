@@ -48,13 +48,12 @@ export default class EditFormView extends AbstractStatefulView {
       isDeleting : false,
       isDisabled : false
     };
-    //console.log('parsePointToState' , rrr);
+
     return rrr;
   };
 
   static parseStateToPoint = (state) => {
     const point = {...state};
-   // console.log(point);
 
     delete point.isSubmitDisabled;
     delete point.isSaving;
