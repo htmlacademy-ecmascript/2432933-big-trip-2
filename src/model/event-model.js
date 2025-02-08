@@ -32,14 +32,10 @@ export default class EventModel extends Observable{
       this.#points = points.map(this.#adaptToClient);
 
       this._notify(UpdateType.INIT);
-
     } catch(error) {
-      this.#points = [];
-      this.#offers = [];
-      this.#destinations = [];
-
       this._notify(UpdateType.FATAL);
-    } // Добавить блокировку кнопки
+      throw new Error(error); // как лучше всего обрабатывать ошибки в блоке catch?
+    }
   }
 
   async updatePoint(type, update) {
@@ -64,26 +60,33 @@ export default class EventModel extends Observable{
     }
   }
 
-  addPoint(type, updatedPoint) {
-    this.#points = [
-      updatedPoint,
-      ...this.#points,
-    ];
-    this._notify(type, updatedPoint);
+  async addPoint(type, update) {
+    try {
+      const response = await this.#pointsApiService.addPoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+
+      this.#points = [ updatedPoint, ...this.#points, ];
+
+      this._notify(type, updatedPoint);
+    } catch(error){
+      throw new Error(error);
+    }
   }
 
-  deletePoint(type, updatedPoint) {
-    const index = this.#points.findIndex((point) => point.id === updatedPoint.id);
+  async deletePoint(type, update) {
+    const index = this.#points.findIndex((point) => point.id === update.id);
     if (index === -1){
       return;
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      ...this.#points.slice(index + 1),
-    ];
+    try {
+      await this.#pointsApiService.deletePoint(update);
+      this.#points = [ ...this.#points.slice(0, index), ...this.#points.slice(index + 1), ];
 
-    this._notify(type, updatedPoint);
+      this._notify(type);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   #adaptToClient(point){

@@ -11,6 +11,7 @@ const filtersModel = new FilterModel();
 
 const filtersPresenter = new FiltersPresenter({ eventModel, filtersModel});
 const tripPresenter = new TripPresenter({eventModel, filtersModel});
+
 filtersPresenter.init();
 tripPresenter.init();
 eventModel.init();

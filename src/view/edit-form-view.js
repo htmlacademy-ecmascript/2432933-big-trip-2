@@ -1,29 +1,15 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { createFormEditTemplate } from './template-view/edit-form-template-view';
 import { findByKey } from '../utils/utils';
-import { configFlatpickr } from '../const';
+import { configFlatpickr, BLANK_POINT } from '../const';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-
-const generateUniqueId = () => `id-${ Date.now()}`;
-
-const BLANK_POINT = {
-  'id': generateUniqueId(),
-  'basePrice': '',
-  'dateFrom': '',
-  'dateTo': '',
-  'destination': '',
-  'isFavorite': false,
-  'offers': [],
-  'type': 'flight'
-};
 
 export default class EditFormView extends AbstractStatefulView {
   #point = [];
   #destinations = [];
   #offersAll = [];
 
-  #datepicker = null;
   #dateFromPicker = null;
   #dateToPicker = null;
 
@@ -31,16 +17,15 @@ export default class EditFormView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #isNewPoint = false;
 
-  constructor({ point = {...BLANK_POINT}, offers, destinations, onDeleteClick, onFormSubmit, isNewPoint }) {
+  constructor({ point = BLANK_POINT, offers, destinations, onDeleteClick, onFormSubmit, isNewPoint }) {
     super();
     this.#point = point;
     this.#offersAll = offers;
     this.#destinations = destinations;
+    this.#isNewPoint = isNewPoint;
 
     this.#handleDeleteClick = onDeleteClick;
     this.#handleFormSubmit = onFormSubmit;
-
-    this.#isNewPoint = isNewPoint;
 
     this._setState(EditFormView.parsePointToState(this.#point));
     this._restoreHandlers();
@@ -50,24 +35,46 @@ export default class EditFormView extends AbstractStatefulView {
     return createFormEditTemplate(this._state, this.#offersAll, this.#destinations, this.#isNewPoint);
   }
 
-
   reset (point) {
     this.updateElement(EditFormView.parsePointToState(point));
   }
 
-  static parsePointToState = (point) => ({...point});
+  static parsePointToState = (point) => {
+    const isSubmitDisabled = !point.destination || point.dateFrom === null || point.dateTo === null;
+    const rrr = {
+      ...point,
+      isSubmitDisabled,
+      isSaving   : false,
+      isDeleting : false,
+      isDisabled : false
+    };
+    //console.log('parsePointToState' , rrr);
+    return rrr;
+  };
 
-  static parseStateToPoint = (state) => ({...state});
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+   // console.log(point);
+
+    delete point.isSubmitDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+    delete point.isDisabled;
+    return point;
+
+  };
 
   _restoreHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    const listOffers = this.element.querySelector('.event__available-offers');
+    if(listOffers !== null){
+      listOffers.addEventListener('change', this.#offersChangeHandler);
+    }
 
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
-
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler); // save
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteClickHandler); // delete
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteClickHandler);
     this.#setDatepicker();
   };
 
@@ -78,7 +85,7 @@ export default class EditFormView extends AbstractStatefulView {
   };
 
 
-  #pointDeleteClickHandler = (evt) => { // Delete
+  #pointDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
   };

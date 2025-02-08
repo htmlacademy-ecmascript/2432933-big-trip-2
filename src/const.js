@@ -44,8 +44,30 @@ const ApiConfig = {
 };
 
 const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
+  GET    : 'GET',
+  PUT    : 'PUT',
+  POST   : 'POST',
+  DELETE : 'DELETE',
+};
+
+const BLANK_POINT = {
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  type: 'flight'
+};
+
+const Mode = {
+  DEFAULT : 'default',
+  EDIT    : 'edit'
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
 };
 
 export {
@@ -57,5 +79,8 @@ export {
   FilterType,
   DEFAULT_FILTER_TYPE,
   ApiConfig,
-  Method
+  Method,
+  BLANK_POINT,
+  Mode,
+  TimeLimit
 };

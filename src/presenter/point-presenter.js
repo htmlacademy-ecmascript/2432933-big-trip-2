@@ -1,15 +1,10 @@
 import TripEventsItemView from '../view/trip-events-item-view.js';
 import EditFormView from '../view/edit-form-view.js';
 import { render, replace, remove } from '../framework/render.js';
-import { UserAction, UpdateType } from '../const.js';
-import { eventsListElement } from '../elements.js';
-
-const Mode = {
-  DEFAULT: 'default',
-  EDIT: 'edit'
-};
+import { UserAction, UpdateType, Mode } from '../const.js';
 
 export default class PointPresenter {
+  #container = null;
   #itemComponent = null;
   #editComponent = null;
   #point = null;
@@ -18,7 +13,8 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
   #handleDataChange = null;
 
-  constructor({ offers, destinations, onDataChange, }) {
+  constructor({ container, offers, destinations, onDataChange, }) {
+    this.#container = container;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
@@ -45,7 +41,7 @@ export default class PointPresenter {
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
-      render(this.#itemComponent, eventsListElement);
+      render(this.#itemComponent, this.#container.element);
       return;
     }
 
@@ -61,6 +57,46 @@ export default class PointPresenter {
     remove(prevPointComponent);
     remove(prevPointEditComponent);
   }
+
+  setSaving() {
+    if (this.#mode !== Mode.EDIT) {
+      return;
+    }
+
+    this.#editComponent.updateElement({
+      isDisabled : true,
+      isSaving   : true,
+    });
+  }
+
+  setDeleting() {
+    if (this.#mode !== Mode.EDIT) {
+      return;
+    }
+
+    this.#editComponent.updateElement({
+      isDisabled : true,
+      isDeleting : true,
+    });
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#itemComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editComponent.updateElement({
+        isDisabled : false,
+        isSaving   : false,
+        isDeleting : false,
+      });
+    };
+
+    this.#editComponent.shake(resetFormState);
+  }
+
 
   #handleDeleteClick = (update) => {
     this.#handleDataChange(
@@ -88,10 +124,6 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  get isMode(){
-    return this.#mode;
-  }
-
   destroy() {
     remove(this.#itemComponent);
     remove(this.#editComponent);
@@ -104,6 +136,5 @@ export default class PointPresenter {
 
   handleFormSubmit = (updatedPoint) => {
     this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, updatedPoint);
-    this.closeEditMode();
   };
 }

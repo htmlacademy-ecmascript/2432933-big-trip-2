@@ -1,26 +1,30 @@
 import TripEventsListView from '../view/trip-events-list-view.js';
+import { render } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class ListPointsPresenter {
   #pointPresenter = null;
   #handleViewAction = null;
   #currentActiveFormId = null;
-  #handleNewFormMode = null;
+  #manageFormMode = null;
+  #container = null;
 
-  constructor({ pointPresenter, handleViewAction, onFormMode}) {
+  constructor({ container, pointPresenter, handleViewAction, manageFormMode }) {
+    this.#container = container;
     this.#pointPresenter = pointPresenter;
     this.#handleViewAction = handleViewAction;
-    this.#handleNewFormMode = onFormMode;
+    this.#manageFormMode = manageFormMode;
   }
 
   init() {
-    const listView = new TripEventsListView({
+    const tripEventsListView = new TripEventsListView({
       handleFavorite      : this.#handleFavorite,
       handleOpenFormEdit  : this.#handleOpenFormEdit,
       handleCloseFormEdit : this.handleCloseFormEdit,
     });
-    //render(this.#listView, this.#container);
-    listView.setClickListener();
+    render(tripEventsListView, this.#container);
+    tripEventsListView.setClickListener();
+    return tripEventsListView;
   }
 
   #handleFavorite = (itemId) => {
@@ -45,7 +49,7 @@ export default class ListPointsPresenter {
     pointPresenter.openEditMode(itemId);
 
     this.#currentActiveFormId = itemId;
-    this.#handleNewFormMode();
+    this.#manageFormMode();
     document.addEventListener('keydown', this.#handleCloseFormEditEscape);
   };
 

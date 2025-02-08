@@ -1,7 +1,7 @@
 import FilterEventsView from '../view/filters-events-view.js';
 import { render, remove, replace } from '../framework/render';
 import { tripControlsElement } from '../elements.js';
-import { generateFilters } from '../mock/filter.js';
+import { generateFilters } from '../utils/filter.js';
 import { UpdateType } from '../const.js';
 
 export default class FiltersPresenter {

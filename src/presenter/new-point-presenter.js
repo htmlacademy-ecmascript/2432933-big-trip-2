@@ -1,16 +1,17 @@
 import EditFormView from '../view/edit-form-view';
 import { render, remove, RenderPosition } from '../framework/render.js';
-import { eventsListElement } from '../elements.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class NewPointPresenter {
-  #offers = null;
-  #destinations = null;
+  #container = null;
+  #offers = [];
+  #destinations = [];
   #newFormPointComponent = null;
   #handleDataChange = null;
   #isNewPoint = false;
 
-  constructor({ offers , destinations, onDataChange }){
+  constructor({ container, offers , destinations, onDataChange }){
+    this.#container = container;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
@@ -29,7 +30,7 @@ export default class NewPointPresenter {
       isNewPoint    : true,
     });
 
-    render(this.#newFormPointComponent , eventsListElement, RenderPosition.AFTERBEGIN);
+    render(this.#newFormPointComponent , this.#container.element, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escapeCloseHandler);
     this.#isNewPoint = true;
   }
@@ -45,9 +46,29 @@ export default class NewPointPresenter {
     this.#isNewPoint = false;
   }
 
+  setSaving() {
+    //console.log(111111);
+    this.#newFormPointComponent.updateElement({
+      isDisabled : true,
+      isSaving   : true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#newFormPointComponent.updateElement({
+        isDisabled : false,
+        isSaving   : false,
+        isDeleting : false,
+      });
+    };
+
+    this.#newFormPointComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (point) => {
     this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, point);
-    this.destroy();
+    //this.destroy();
   };
 
   #handleCancelClick = () => {

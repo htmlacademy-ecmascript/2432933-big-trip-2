@@ -28,5 +28,5 @@ const getSortTypes = () =>
       isDisabled: SortTypeDisabled[type],
     }));
 
-export { sortItems, getSortTypes};
+export { sortItems, getSortTypes, getPointsDateDifference};
 
