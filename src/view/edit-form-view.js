@@ -41,7 +41,7 @@ export default class EditFormView extends AbstractStatefulView {
 
   static parsePointToState = (point) => {
     const isSubmitDisabled = !point.destination || point.dateFrom === null || point.dateTo === null;
-    const rrr = {
+    return {
       ...point,
       isSubmitDisabled,
       isSaving   : false,
@@ -49,7 +49,6 @@ export default class EditFormView extends AbstractStatefulView {
       isDisabled : false
     };
 
-    return rrr;
   };
 
   static parseStateToPoint = (state) => {
