@@ -1,15 +1,15 @@
 import { eventsContainerElement, newPointButtonElement } from '../elements.js';
-import { UserAction, UpdateType, DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, TimeLimit } from '../const.js';
+import { UserAction, UpdateType, DEFAULT_SORT_TYPE, DEFAULT_FILTER_TYPE, TimeLimit, MessageNoPoints } from '../const.js';
 import { render, RenderPosition, remove } from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { sortItems, getSortTypes } from '../utils/sorting.js';
 import SortEventsView from '../view/sort-events-view.js';
-import PreloadMessageView from '../view/preload-message-view.js';
 import TripInfoPresenter from './trip-info-presenter.js';
 import ListPointsPresenter from './list-points-presenter.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import { filterPoints } from '../utils/filter.js';
+import MessagePresenter from '../presenter/message-presenter.js';
 
 export default class TripPresenter {
   #eventModel = {};
@@ -27,7 +27,8 @@ export default class TripPresenter {
   #currentFilterType = DEFAULT_FILTER_TYPE;
 
   #listContainer = null;
-  #messageComponent = null;
+
+  #messageComponent = new MessagePresenter(eventsContainerElement);
   #uiBlocker = new UiBlocker({
     lowerLimit : TimeLimit.LOWER_LIMIT,
     upperLimit : TimeLimit.UPPER_LIMIT
@@ -38,10 +39,11 @@ export default class TripPresenter {
     this.#filtersModel = filtersModel;
     this.#eventModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
+    this.#createNewPoint();
   }
 
   init() {
-    this.#createNewPoint();
+    //this.#createNewPoint();
     this.#renderPointsList();
     this.#renderTrip();
   }
@@ -62,14 +64,6 @@ export default class TripPresenter {
     return this.#eventModel.allDestinations;
   }
 
-  #renderMessage(text) {
-    if (this.#messageComponent) {
-      remove(this.#messageComponent);
-    }
-    this.#messageComponent = new PreloadMessageView(text);
-    render(this.#messageComponent, eventsContainerElement, RenderPosition.AFTERBEGIN);
-  }
-
   #renderPointsList(){
     this.#listPointsPresenter = new ListPointsPresenter({
       container         : eventsContainerElement,
@@ -78,18 +72,6 @@ export default class TripPresenter {
       manageFormMode    : this.#handleCloseNewForm,
     });
     this.#listContainer = this.#listPointsPresenter.init();
-  }
-
-  #clearMessage() {
-    if (this.#messageComponent) {
-      remove(this.#messageComponent);
-      this.#messageComponent = null;
-    }
-  }
-
-  #renderFatal() {
-    this.#clearMessage();
-    this.#renderMessage('Failed to load latest route information');
   }
 
   #handleCloseNewForm = () => {
@@ -105,12 +87,14 @@ export default class TripPresenter {
       offers       : this.offers,
       destinations : this.destinations,
       onDataChange : this.#handleViewAction,
+      messageComponent : this.#messageComponent
     });
+
   }
 
   #createNewPoint() {
-    newPointButtonElement.disabled = true; // где лучше всего блокировать кнопку ? разблокирую на строке 161  ина 167 в случае ошибки блокаирую.
-    newPointButtonElement.addEventListener('click', this.#handleNewPointButtonClick); // ну и сам клик. Где лучше всего вешать событие?
+    newPointButtonElement.disabled = true;
+    newPointButtonElement.addEventListener('click', this.#handleNewPointButtonClick);
   }
 
   #handleNewPointButtonClick = () => {
@@ -123,10 +107,10 @@ export default class TripPresenter {
   #renderPoints() {
     this.points.forEach((point) => {
       const pointPresenter = new PointPresenter({
-        container : this.#listContainer,
-        offers : this.offers,
+        container    : this.#listContainer,
+        offers       : this.offers,
         destinations : this.destinations,
-        onDataChange: this.#handleViewAction,
+        onDataChange : this.#handleViewAction,
       });
 
       pointPresenter.init(point);
@@ -158,14 +142,19 @@ export default class TripPresenter {
         newPointButtonElement.disabled = false;
       },
       [UpdateType.FATAL] : () => {
-        this.#isFailed = true;
-        this.#isLoading = false;
         this.#renderFatal();
-        newPointButtonElement.disabled = true;
       }
     };
     updateHandlers[updateType]();
   };
+
+  #renderFatal(){
+    this.#isFailed = true;
+    this.#isLoading = false;
+    newPointButtonElement.disabled = true;
+    this.#messageComponent.clearMessage();
+    this.#messageComponent.newMessage('Failed to load latest route information');
+  }
 
   #rerenderTrip(){
     this.#clearBoard();
@@ -215,8 +204,7 @@ export default class TripPresenter {
   };
 
 
-  #clearBoard(){
-    this.#clearMessage();
+  #clearBoard() {
     this.#newPointPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
@@ -226,18 +214,26 @@ export default class TripPresenter {
     }
 
     this.#listPointsPresenter.resetCurrentActiveFormId();
-
     remove(this.#tripSortComponent);
   }
 
+  #getMessageNoPint() {
+    if (this.points.length === 0) {
+      return MessageNoPoints[this.#currentFilterType] || MessageNoPoints.default;
+    }
+    return '';
+  }
+
   #renderTrip(){
+    this.#messageComponent.clearMessage();
     if (this.#isLoading) {
-      this.#renderMessage('Loading ...');
+      this.#messageComponent.newMessage('Loading ...');
       return;
     }
 
-    if (this.points.length === 0 && !this.#newPointPresenter) {
-      this.#renderMessage('Click New Event to create your first point');
+    const message = this.#getMessageNoPint();
+    if (message) {
+      this.#messageComponent.newMessage(message);
       return;
     }
 

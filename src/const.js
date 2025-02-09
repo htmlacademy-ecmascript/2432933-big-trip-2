@@ -70,6 +70,13 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const MessageNoPoints = {
+  past    : 'There are no past events now',
+  future  : 'There are no future events now',
+  present : 'There are no present events now',
+  default : 'Click New Event to create your first point',
+};
+
 export {
   SortType,
   DEFAULT_SORT_TYPE,
@@ -82,5 +89,6 @@ export {
   Method,
   BLANK_POINT,
   Mode,
-  TimeLimit
+  TimeLimit,
+  MessageNoPoints
 };

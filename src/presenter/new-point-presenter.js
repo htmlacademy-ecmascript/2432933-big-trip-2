@@ -1,6 +1,7 @@
 import EditFormView from '../view/edit-form-view';
 import { render, remove, RenderPosition } from '../framework/render.js';
 import { UserAction, UpdateType } from '../const.js';
+import { newPointButtonElement } from '../elements.js';
 
 export default class NewPointPresenter {
   #container = null;
@@ -10,11 +11,12 @@ export default class NewPointPresenter {
   #handleDataChange = null;
   #isNewPoint = false;
 
-  constructor({ container, offers , destinations, onDataChange }){
+  constructor({ container, offers , destinations, onDataChange, messageComponent }){
     this.#container = container;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
+    this.messageComponent = messageComponent;
   }
 
   init() {
@@ -33,6 +35,8 @@ export default class NewPointPresenter {
     render(this.#newFormPointComponent , this.#container.element, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escapeCloseHandler);
     this.#isNewPoint = true;
+    newPointButtonElement.disabled = true;
+    this.messageComponent.clearMessage();
   }
 
   destroy() {
@@ -44,6 +48,8 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escapeCloseHandler);
     this.#newFormPointComponent = null;
     this.#isNewPoint = false;
+    newPointButtonElement.disabled = false;
+    this.messageComponent.newMessage('Click New Event to create your first point');
   }
 
   setSaving() {

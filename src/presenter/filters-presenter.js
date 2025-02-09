@@ -27,12 +27,10 @@ export default class FiltersPresenter {
 
   init(){
     this.#currentFilter = this.#filtersModel.currentFilter;
-    const filters = this.filters;
-
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterEventsView({
-      filters,
+      filters            : this.filters,
       currentFilter      : this.#currentFilter,
       onFilterTypeChange : this.#filterChangeHandler,
     });
