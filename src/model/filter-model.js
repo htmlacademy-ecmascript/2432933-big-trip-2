@@ -1,8 +1,8 @@
 import Observable from '../framework/observable.js';
-import { FilterType } from '../const.js';
+import { DEFAULT_FILTER_TYPE } from '../const.js';
 
 export default class FilterModel extends Observable {
-  #currentFilter = FilterType.EVERYTHING;
+  #currentFilter = DEFAULT_FILTER_TYPE;
 
   get currentFilter() {
     return this.#currentFilter;

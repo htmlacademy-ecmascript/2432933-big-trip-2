@@ -1,14 +1,21 @@
-import { eventsListElement } from '../elements';
+import AbstractView from '../framework/view/abstract-view';
 
-export default class TripEventsListView {
+const createPointsListTemplate = () => '<ul class="trip-events__list"></ul>';
+
+export default class TripEventsListView extends AbstractView {
   constructor({ handleOpenFormEdit, handleCloseFormEdit, handleFavorite }) {
+    super();
     this.handleOpenFormEdit = handleOpenFormEdit;
     this.handleCloseFormEdit = handleCloseFormEdit;
     this.handleFavorite = handleFavorite;
   }
 
+  get template() {
+    return createPointsListTemplate();
+  }
+
   setClickListener() {
-    eventsListElement.addEventListener('click', this.#handleClick);
+    this.element.addEventListener('click', this.#handleClick);
   }
 
   #handleClick = (event) => {

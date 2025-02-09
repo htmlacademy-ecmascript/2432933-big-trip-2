@@ -1,7 +1,7 @@
 import FilterEventsView from '../view/filters-events-view.js';
 import { render, remove, replace } from '../framework/render';
 import { tripControlsElement } from '../elements.js';
-import { generateFilters } from '../mock/filter.js';
+import { generateFilters } from '../utils/filter.js';
 import { UpdateType } from '../const.js';
 
 export default class FiltersPresenter {
@@ -27,12 +27,10 @@ export default class FiltersPresenter {
 
   init(){
     this.#currentFilter = this.#filtersModel.currentFilter;
-    const filters = this.filters;
-
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterEventsView({
-      filters,
+      filters            : this.filters,
       currentFilter      : this.#currentFilter,
       onFilterTypeChange : this.#filterChangeHandler,
     });

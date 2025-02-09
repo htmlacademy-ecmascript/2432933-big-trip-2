@@ -31,6 +31,10 @@ const createOffersSelectorTemplate = (offer, isChecked) => {
 };
 
 const createOffersSectionTemplate = (point, offers) => {
+  if (offers.length === 0) {
+    return '';
+  }
+
   const offersSelector = offers.map((offer) =>
     createOffersSelectorTemplate(offer, point.offers.includes(offer.id))
   ).join('');
@@ -80,20 +84,34 @@ const createDescriptionSectionTemplate = (destinations) => {
   </section>` : '';
 };
 
-const createRollupButtonTemplate = (isNewPoint) => {
-  const f = !isNewPoint ? `<button class="event__rollup-btn event__rollup-btn-edit" type="button">
+const createRollupButtonTemplate = (isNewPoint) => (!isNewPoint ? `<button class="event__rollup-btn event__rollup-btn-edit" type="button">
   <span class="visually-hidden">Open event</span>
 </button>`
-    : '';
+  : '');
 
-  return f;
+const createButtonDeleteTemplate = (isDeleting, isNewPoint, isDisabled) => {
+  const isDataDeleting = isDeleting ? 'Deleting...' : 'Delete';
+  return `<button class="event__reset-btn" type="reset" ${isDisabled}>
+      ${isNewPoint ? 'Cancel' : isDataDeleting}
+    </button>`;
 };
 
+const createButtonSaveTemplate = (isSaving, isDisabled) => (
+  `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+     ${isSaving ? 'Saving...' : 'Save'}
+   </button>`);
+
+const getDisabledAttribute = (isDisabled) => isDisabled ? 'disabled' : '';
+
 const createFormEditTemplate = (point, offers, destinations, isNewPoint = false) => {
-  const { type, basePrice, dateFrom, dateTo } = point;
+  const { type, basePrice, dateFrom, dateTo, isSaving, isDeleting, isDisabled } = point;
+
+  const disabledAttribute = getDisabledAttribute(isDisabled);
+  const buttonDeleteTemplate = createButtonDeleteTemplate(isDeleting, isNewPoint, disabledAttribute);
+
+  const buttonSaveTemplate = createButtonSaveTemplate(isSaving, disabledAttribute);
 
   const offersForType = findByKey(offers, 'type', point.type)?.offers || [];
-
   const destinationsForId = findByKey(destinations, 'id', point.destination) || {};
 
   const typesEventTemplate = createTypesEventTemplate(offers);
@@ -144,9 +162,8 @@ const createFormEditTemplate = (point, offers, destinations, isNewPoint = false)
       </label>
       <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
     </div>
-
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">${isNewPoint ? 'Cancel' : 'Delete'}</button>
+     ${buttonSaveTemplate}
+     ${buttonDeleteTemplate}
      ${eventRollupButtonTemplate}
   </header>
   <section class="event__details"> ${offersTemplate} ${destinationsTemplate} </section>
