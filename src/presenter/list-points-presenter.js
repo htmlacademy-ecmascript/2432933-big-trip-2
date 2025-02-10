@@ -18,16 +18,20 @@ export default class ListPointsPresenter {
 
   init() {
     const tripEventsListView = new TripEventsListView({
-      handleFavorite      : this.#handleFavorite,
-      handleOpenFormEdit  : this.#handleOpenFormEdit,
-      handleCloseFormEdit : this.handleCloseFormEdit,
+      onFavoriteClick      : this.#handleFavoriteClick,
+      onOpenFormEditClick  : this.#handleOpenFormEditClick,
+      onCloseFormEditClick : this.#handleCloseFormEditClick,
     });
     render(tripEventsListView, this.#container);
     tripEventsListView.setClickListener();
     return tripEventsListView;
   }
 
-  #handleFavorite = (itemId) => {
+  resetCurrentActiveFormId = () => {
+    this.#currentActiveFormId = null;
+  };
+
+  #handleFavoriteClick = (itemId) => {
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (!pointPresenter) {
       return;
@@ -37,9 +41,9 @@ export default class ListPointsPresenter {
     this.#handleViewAction(UserAction.UPDATE_POINT, UpdateType.PATCH, updatedPoint);
   };
 
-  #handleOpenFormEdit = (itemId) => {
+  #handleOpenFormEditClick = (itemId) => {
     if (this.#currentActiveFormId !== null) {
-      this.handleCloseFormEdit(this.#currentActiveFormId);
+      this.#handleCloseFormEditClick(this.#currentActiveFormId);
     }
 
     const pointPresenter = this.#pointPresenter.get(itemId);
@@ -50,10 +54,10 @@ export default class ListPointsPresenter {
 
     this.#currentActiveFormId = itemId;
     this.#manageFormMode();
-    document.addEventListener('keydown', this.#handleCloseFormEditEscape);
+    document.addEventListener('keydown', this.#onEscapeCloseClick);
   };
 
-  handleCloseFormEdit = (itemId) => {
+  #handleCloseFormEditClick = (itemId) => {
     const pointPresenter = this.#pointPresenter.get(itemId);
     if (!pointPresenter) {
       return;
@@ -63,16 +67,13 @@ export default class ListPointsPresenter {
     pointPresenter.closeEditMode();
 
     this.#currentActiveFormId = null;
-    document.removeEventListener('keydown', this.#handleCloseFormEditEscape);
+    document.removeEventListener('keydown', this.#onEscapeCloseClick);
   };
 
-  #handleCloseFormEditEscape = (event) => {
+  #onEscapeCloseClick = (event) => {
     if (event.key === 'Escape' && this.#currentActiveFormId !== null) {
-      this.handleCloseFormEdit(this.#currentActiveFormId);
+      this.#handleCloseFormEditClick(this.#currentActiveFormId);
     }
   };
 
-  resetCurrentActiveFormId = () => {
-    this.#currentActiveFormId = null;
-  };
 }

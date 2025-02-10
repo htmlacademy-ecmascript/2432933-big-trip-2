@@ -13,11 +13,15 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
   #handleDataChange = null;
 
-  constructor({ container, offers, destinations, onDataChange, }) {
+  constructor({ container, offers, destinations, onDataChange }) {
     this.#container = container;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
+  }
+
+  get toggleFavorite() {
+    return { ...this.#point, isFavorite: !this.#point.isFavorite };
   }
 
   init(point) {
@@ -27,17 +31,17 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#editComponent;
 
     this.#itemComponent = new TripEventsItemView({
-      point : this.#point,
-      offers : this.#offers,
+      point        : this.#point,
+      offers       : this.#offers,
       destinations : this.#destinations,
     });
 
     this.#editComponent = new EditFormView({
-      point         : this.#point,
-      offers        : this.#offers,
-      destinations  : this.#destinations,
-      onDeleteClick : this.#handleDeleteClick,
-      onFormSubmit  : this.handleFormSubmit,
+      point             : this.#point,
+      offers            : this.#offers,
+      destinations      : this.#destinations,
+      onDeleteClick     : this.#handleDeleteClick,
+      onFormSubmitClick : this.#handleFormSubmitClick,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -49,7 +53,7 @@ export default class PointPresenter {
       replace(this.#itemComponent, prevPointComponent);
     }
 
-    if (this.#mode === Mode.EDIT){
+    if (this.#mode === Mode.EDIT) {
       replace(this.#editComponent, prevPointEditComponent);
       this.#mode = Mode.DEFAULT;
     }
@@ -58,66 +62,10 @@ export default class PointPresenter {
     remove(prevPointEditComponent);
   }
 
-  setSaving() {
-    if (this.#mode !== Mode.EDIT) {
-      return;
-    }
-
-    this.#editComponent.updateElement({
-      isDisabled : true,
-      isSaving   : true,
-    });
-  }
-
-  setDeleting() {
-    if (this.#mode !== Mode.EDIT) {
-      return;
-    }
-
-    this.#editComponent.updateElement({
-      isDisabled : true,
-      isDeleting : true,
-    });
-  }
-
-  setAborting() {
-    if (this.#mode === Mode.DEFAULT) {
-      this.#itemComponent.shake();
-      return;
-    }
-
-    const resetFormState = () => {
-      this.#editComponent.updateElement({
-        isDisabled : false,
-        isSaving   : false,
-        isDeleting : false,
-      });
-    };
-
-    this.#editComponent.shake(resetFormState);
-  }
-
-
-  #handleDeleteClick = (update) => {
-    this.#handleDataChange(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      update,
-    );
-  };
-
-  get toggleFavorite() {
-    return {
-      ...this.#point,
-      isFavorite: !this.#point.isFavorite,
-    };
-  }
-
   openEditMode() {
     replace(this.#editComponent, this.#itemComponent);
     this.#mode = Mode.EDIT;
   }
-
 
   closeEditMode() {
     replace(this.#itemComponent, this.#editComponent);
@@ -133,8 +81,50 @@ export default class PointPresenter {
     this.#editComponent.reset(this.#point);
   }
 
+  setSaving() {
+    if (this.#mode !== Mode.EDIT) {
+      return;
+    }
 
-  handleFormSubmit = (updatedPoint) => {
+    this.#editComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeleting() {
+    if (this.#mode !== Mode.EDIT) {
+      return;
+    }
+
+    this.#editComponent.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#itemComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editComponent.shake(resetFormState);
+  }
+
+  #handleDeleteClick = (update) => {
+    this.#handleDataChange(UserAction.DELETE_POINT, UpdateType.MINOR, update);
+  };
+
+  #handleFormSubmitClick = (updatedPoint) => {
     this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, updatedPoint);
   };
 }

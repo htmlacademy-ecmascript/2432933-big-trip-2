@@ -30,7 +30,6 @@ export default class EventModel extends Observable{
       this.#offers = await this.#pointsApiService.offers;
       this.#destinations = await this.#pointsApiService.destinations;
       this.#points = points.map(this.#adaptToClient);
-
       this._notify(UpdateType.INIT);
     } catch(error) {
       this._notify(UpdateType.FATAL);
@@ -67,7 +66,7 @@ export default class EventModel extends Observable{
 
       this.#points = [ updatedPoint, ...this.#points, ];
 
-      this._notify(type, updatedPoint);
+      this._notify(type, update);
     } catch(error){
       throw new Error(error);
     }

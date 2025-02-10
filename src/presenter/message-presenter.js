@@ -1,4 +1,4 @@
-import PreloadMessageView from '../view/preload-message-view';
+import MessageView from '../view/message-view';
 import { render, remove, RenderPosition } from '../framework/render';
 
 export default class MessagePresenter {
@@ -14,7 +14,7 @@ export default class MessagePresenter {
     this.#message = newMessage;
     this.#clearMessage();
 
-    this.#messageComponent = new PreloadMessageView(this.#message);
+    this.#messageComponent = new MessageView(this.#message);
     render(this.#messageComponent, this.#container, RenderPosition.AFTERBEGIN);
   }
 

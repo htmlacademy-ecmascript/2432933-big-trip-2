@@ -14,10 +14,10 @@ export default class EditFormView extends AbstractStatefulView {
   #dateToPicker = null;
 
   #handleDeleteClick = null;
-  #handleFormSubmit = null;
+  #handleFormSubmitClick = null;
   #isNewPoint = false;
 
-  constructor({ point = BLANK_POINT, offers, destinations, onDeleteClick, onFormSubmit, isNewPoint }) {
+  constructor({ point = BLANK_POINT, offers, destinations, onDeleteClick, onFormSubmitClick, isNewPoint }) {
     super();
     this.#point = point;
     this.#offersAll = offers;
@@ -25,7 +25,7 @@ export default class EditFormView extends AbstractStatefulView {
     this.#isNewPoint = isNewPoint;
 
     this.#handleDeleteClick = onDeleteClick;
-    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormSubmitClick = onFormSubmitClick;
 
     this._setState(EditFormView.parsePointToState(this.#point));
     this._restoreHandlers();
@@ -33,10 +33,6 @@ export default class EditFormView extends AbstractStatefulView {
 
   get template() {
     return createFormEditTemplate(this._state, this.#offersAll, this.#destinations, this.#isNewPoint);
-  }
-
-  reset (point) {
-    this.updateElement(EditFormView.parsePointToState(point));
   }
 
   static parsePointToState = (point) => {
@@ -59,36 +55,71 @@ export default class EditFormView extends AbstractStatefulView {
     delete point.isDeleting;
     delete point.isDisabled;
     return point;
-
   };
 
   _restoreHandlers = () => {
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChangeClick);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChangeClick);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#onPriceChangeClick);
     const listOffers = this.element.querySelector('.event__available-offers');
     if(listOffers !== null){
-      listOffers.addEventListener('change', this.#offersChangeHandler);
+      listOffers.addEventListener('change', this.#onOffersChangeClick);
     }
 
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteClickHandler);
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#onFormSubmitClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onPointDeleteClick);
     this.#setDatepicker();
   };
 
+  reset (point) {
+    this.updateElement(EditFormView.parsePointToState(point));
+  }
 
-  #formSubmitHandler = (evt) => {
+  removeElement () {
+    super.removeElement();
+
+    if (this.#dateFromPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
+    }
+
+    if (this.#dateToPicker) {
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
+  }
+
+  #setDatepicker = () => {
+    this.#dateFromPicker = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
+      {
+        ...configFlatpickr,
+        defaultDate : this._state.dateFrom,
+        maxDate     : this._state.dateTo,
+        onClose     : this.#onDateFromCloseClick,
+      });
+
+    this.#dateToPicker = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
+      {
+        ...configFlatpickr,
+        defaultDate : this._state.dateTo,
+        minDate     : this._state.dateFrom,
+        onClose     : this.#onDateToCloseClick,
+      });
+
+  };
+
+  #onFormSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(EditFormView.parseStateToPoint(this._state));
+    this.#handleFormSubmitClick(EditFormView.parseStateToPoint(this._state));
   };
 
 
-  #pointDeleteClickHandler = (evt) => {
+  #onPointDeleteClick = (evt) => {
     evt.preventDefault();
     this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
   };
 
-  #typeChangeHandler = (evt) => {
+  #onTypeChangeClick = (evt) => {
     evt.preventDefault();
     const selectedType = evt.target.value;
 
@@ -99,13 +130,13 @@ export default class EditFormView extends AbstractStatefulView {
 
   };
 
-  #destinationChangeHandler = (evt) => {
+  #onDestinationChangeClick = (evt) => {
     evt.preventDefault();
     const newDestination = findByKey(this.#destinations, 'name', evt.target.value)?.id ?? {};
     this.updateElement({ destination: newDestination });
   };
 
-  #priceChangeHandler = (evt) => {
+  #onPriceChangeClick = (evt) => {
     evt.preventDefault();
     const price = Number(evt.target.value);
 
@@ -119,7 +150,7 @@ export default class EditFormView extends AbstractStatefulView {
     });
   };
 
-  #offersChangeHandler = (evt) => {
+  #onOffersChangeClick = (evt) => {
     evt.preventDefault();
 
     const offerCheckbox = evt.target.classList.contains('event__offer-checkbox');
@@ -141,49 +172,18 @@ export default class EditFormView extends AbstractStatefulView {
     this._setState({ offers: Array.from(selectedOffers)});
   };
 
-  #setDatepicker() {
-    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'),
-      {
-        ...configFlatpickr,
-        defaultDate : this._state.dateFrom,
-        maxDate     : this._state.dateTo,
-        onClose     : this.#dateFromCloseHandler,
-      });
-
-    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'),
-      {
-        ...configFlatpickr,
-        defaultDate : this._state.dateTo,
-        minDate     : this._state.dateFrom,
-        onClose     : this.#dateToCloseHandler,
-      });
-
-  }
-
-  #dateFromCloseHandler = ([userDate]) => {
+  #onDateFromCloseClick = ([userDate]) => {
     this.#dateToPicker.set('minDate', this._state.dateFrom);
     this.updateElement({
       dateFrom : userDate,
     });
   };
 
-  #dateToCloseHandler = ([userDate]) => {
+  #onDateToCloseClick = ([userDate]) => {
     this.#dateFromPicker.set('maxDate', this._state.dateTo);
     this.updateElement({
       dateTo : userDate,
     });
   };
 
-  removeElement = () =>{
-    super.removeElement();
-    if (this.#dateFromPicker !== null) {
-      this.#dateFromPicker.destroy();
-      this.#dateFromPicker = null;
-    }
-
-    if (this.#dateToPicker !== null) {
-      this.#dateToPicker.destroy();
-      this.#dateToPicker = null;
-    }
-  };
 }

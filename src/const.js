@@ -30,17 +30,17 @@ const configFlatpickr = {
 };
 
 const FilterType = {
-  EVERYTHING : 'everything',
-  FUTURE     : 'future',
-  PRESENT    : 'present',
-  PAST       : 'past',
+  EVERYTHING : 'EVERYTHING',
+  FUTURE     : 'FUTURE',
+  PRESENT    : 'PRESENT',
+  PAST       : 'PAST',
 };
 
 const DEFAULT_FILTER_TYPE = FilterType.EVERYTHING;
 
 const ApiConfig = {
   AUTHORIZATION :'Basic hS2sfS44wcl1saRe33sd3sf',
-  END_POINT     : 'https://22.objects.htmlacademy.pro/big-trip',
+  END_POINT     : 'https://23.objects.htmlacademy.pro/big-trip',
 };
 
 const Method = {
@@ -51,13 +51,14 @@ const Method = {
 };
 
 const BLANK_POINT = {
-  destination: '',
-  isFavorite: false,
-  offers: [],
-  basePrice: 0,
-  dateFrom: null,
-  dateTo: null,
-  type: 'flight'
+  id : '2222',
+  destination : '',
+  isFavorite  : false,
+  offers      : [],
+  basePrice   : 0,
+  dateFrom    : null,
+  dateTo      : null,
+  type        : 'flight'
 };
 
 const Mode = {
@@ -66,15 +67,15 @@ const Mode = {
 };
 
 const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
+  LOWER_LIMIT : 350,
+  UPPER_LIMIT : 1000,
 };
 
 const MessageNoPoints = {
-  past    : 'There are no past events now',
-  future  : 'There are no future events now',
-  present : 'There are no present events now',
-  default : 'Click New Event to create your first point',
+  PAST    : 'There are no past events now',
+  FUTURE  : 'There are no future events now',
+  PRESENT : 'There are no present events now',
+  DEFAULT : 'Click New Event to create your first point',
 };
 
 export {

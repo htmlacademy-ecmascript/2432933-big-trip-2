@@ -1,8 +1,9 @@
-import { getArraysByType, getUppercaseWords, findByKey } from '../../utils/utils';
+import { getArraysByType, getUppercaseWords, findByKey, getDisabledAttribute } from '../../utils/utils';
 import { getEventDate } from '../../utils/formatDate';
 
 const createTypesEventTemplate = (offers) => {
   const pointTypes = getArraysByType(offers,'type');
+
   return (
     pointTypes.map((type)=> `<div class="event__type-item">
   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
@@ -49,7 +50,7 @@ const createOffersSectionTemplate = (point, offers) => {
   `;
 };
 
-const createGroupTimeTemplate = (dateFrom, dateTo) => {
+const createGroupTimeTemplate = (dateFrom, dateTo, isDisabled) => {
   const format = 'DD/MM/YY HH:mm';
   const dateFromFormat = getEventDate(dateFrom, format);
   const dateToFormat = getEventDate(dateTo, format);
@@ -57,10 +58,10 @@ const createGroupTimeTemplate = (dateFrom, dateTo) => {
   return `
   <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromFormat}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromFormat}" ${isDisabled}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToFormat}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToFormat}" ${isDisabled}>
     </div>
   `;
 };
@@ -101,8 +102,6 @@ const createButtonSaveTemplate = (isSaving, isDisabled) => (
      ${isSaving ? 'Saving...' : 'Save'}
    </button>`);
 
-const getDisabledAttribute = (isDisabled) => isDisabled ? 'disabled' : '';
-
 const createFormEditTemplate = (point, offers, destinations, isNewPoint = false) => {
   const { type, basePrice, dateFrom, dateTo, isSaving, isDeleting, isDisabled } = point;
 
@@ -120,7 +119,7 @@ const createFormEditTemplate = (point, offers, destinations, isNewPoint = false)
   const offersTemplate = createOffersSectionTemplate(point, offersForType);
 
   const destinationsTemplate = createDescriptionSectionTemplate(destinationsForId);
-  const timeTemplate = createGroupTimeTemplate(dateFrom, dateTo);
+  const timeTemplate = createGroupTimeTemplate(dateFrom, dateTo, disabledAttribute);
 
   const destinationName = destinationsForId.name ? destinationsForId.name : '';
   const eventRollupButtonTemplate = createRollupButtonTemplate(isNewPoint);
@@ -148,7 +147,7 @@ const createFormEditTemplate = (point, offers, destinations, isNewPoint = false)
       <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1" ${disabledAttribute}>
       <datalist id="destination-list-1">
         ${citiesTemplate}
        </datalist>
@@ -160,7 +159,7 @@ const createFormEditTemplate = (point, offers, destinations, isNewPoint = false)
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${disabledAttribute}>
     </div>
      ${buttonSaveTemplate}
      ${buttonDeleteTemplate}
