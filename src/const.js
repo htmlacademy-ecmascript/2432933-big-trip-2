@@ -51,7 +51,6 @@ const Method = {
 };
 
 const BLANK_POINT = {
-  id : '2222',
   destination : '',
   isFavorite  : false,
   offers      : [],
