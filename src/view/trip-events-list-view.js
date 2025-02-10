@@ -3,11 +3,11 @@ import AbstractView from '../framework/view/abstract-view';
 const createPointsListTemplate = () => '<ul class="trip-events__list"></ul>';
 
 export default class TripEventsListView extends AbstractView {
-  constructor({ handleOpenFormEdit, handleCloseFormEdit, handleFavorite }) {
+  constructor({ onOpenFormEditClick, onCloseFormEditClick, onFavoriteClick }) {
     super();
-    this.handleOpenFormEdit = handleOpenFormEdit;
-    this.handleCloseFormEdit = handleCloseFormEdit;
-    this.handleFavorite = handleFavorite;
+    this.handleOpenFormEditClick = onOpenFormEditClick;
+    this.handleCloseFormEditClick = onCloseFormEditClick;
+    this.handleFavoriteClick = onFavoriteClick;
   }
 
   get template() {
@@ -30,16 +30,16 @@ export default class TripEventsListView extends AbstractView {
     const closeFormEdit = event.target.classList.contains('event__rollup-btn-edit');
 
     if (openFormEdit) {
-      this.handleOpenFormEdit(itemId);
+      this.handleOpenFormEditClick(itemId);
       return;
     }
 
     if (favorite) {
-      this.handleFavorite(itemId);
+      this.handleFavoriteClick(itemId);
     }
 
     if (closeFormEdit) {
-      this.handleCloseFormEdit(itemId);
+      this.handleCloseFormEditClick(itemId);
     }
   };
 }

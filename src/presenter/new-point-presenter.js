@@ -10,13 +10,18 @@ export default class NewPointPresenter {
   #newFormPointComponent = null;
   #handleDataChange = null;
   #isNewPoint = false;
+  #checkNoPoints = null;
 
-  constructor({ container, offers , destinations, onDataChange, messageComponent }){
+  constructor({ container, offers , destinations, onDataChange, onCheckNoPoints}){
     this.#container = container;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleDataChange = onDataChange;
-    this.messageComponent = messageComponent;
+    this.#checkNoPoints = onCheckNoPoints;
+  }
+
+  get mode(){
+    return this.#isNewPoint;
   }
 
   init() {
@@ -25,18 +30,17 @@ export default class NewPointPresenter {
     }
 
     this.#newFormPointComponent = new EditFormView({
-      offers        : this.#offers,
-      destinations  : this.#destinations,
-      onDeleteClick : this.#handleCancelClick,
-      onFormSubmit  : this.#handleFormSubmit,
-      isNewPoint    : true,
+      offers            : this.#offers,
+      destinations      : this.#destinations,
+      onDeleteClick     : this.#handleCloseForm,
+      onFormSubmitClick : this.#handleFormSubmit,
+      isNewPoint        : true,
     });
 
     render(this.#newFormPointComponent , this.#container.element, RenderPosition.AFTERBEGIN);
-    document.addEventListener('keydown', this.#escapeCloseHandler);
+    document.addEventListener('keydown', this.#onEscapeCloseClick);
     this.#isNewPoint = true;
     newPointButtonElement.disabled = true;
-    this.messageComponent.clearMessage();
   }
 
   destroy() {
@@ -45,11 +49,11 @@ export default class NewPointPresenter {
     }
 
     remove(this.#newFormPointComponent);
-    document.removeEventListener('keydown', this.#escapeCloseHandler);
+    document.removeEventListener('keydown', this.#onEscapeCloseClick);
     this.#newFormPointComponent = null;
     this.#isNewPoint = false;
     newPointButtonElement.disabled = false;
-    this.messageComponent.newMessage('Click New Event to create your first point');
+
   }
 
   setSaving() {
@@ -75,18 +79,15 @@ export default class NewPointPresenter {
     this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, point);
   };
 
-  #handleCancelClick = () => {
+  #handleCloseForm = () => {
     this.destroy();
+    this.#checkNoPoints();
   };
 
-  get mode(){
-    return this.#isNewPoint;
-  }
-
-  #escapeCloseHandler = (evt) => {
+  #onEscapeCloseClick = (evt) => {
     if (evt.key === 'Escape'){
       evt.preventDefault();
-      this.destroy();
+      this.#handleCloseForm();
     }
   };
 

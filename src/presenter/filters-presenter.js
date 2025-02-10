@@ -32,7 +32,7 @@ export default class FiltersPresenter {
     this.#filterComponent = new FilterEventsView({
       filters            : this.filters,
       currentFilter      : this.#currentFilter,
-      onFilterTypeChange : this.#filterChangeHandler,
+      onFilterTypeChange : this.#handleFilterChange,
     });
 
     if (prevFilterComponent === null) {
@@ -44,7 +44,7 @@ export default class FiltersPresenter {
     remove(prevFilterComponent);
   }
 
-  #filterChangeHandler = (filterType) => {
+  #handleFilterChange = (filterType) => {
     if (this.#filtersModel.currentFilter === filterType) {
       return;
     }

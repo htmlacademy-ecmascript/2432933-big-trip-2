@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view';
 
 const createPreloadTemplate = (message) => `<p class="trip-events__msg">${message}</p>`;
 
-export default class PreloadMessageView extends AbstractView {
+export default class MessageView extends AbstractView {
   #message = '';
 
   constructor(message) {

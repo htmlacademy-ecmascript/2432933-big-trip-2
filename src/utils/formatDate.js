@@ -4,20 +4,18 @@ dayjs.extend(duration);
 
 const getEventDate = (date, format) => date ? dayjs(date).format(format) : '';
 
-const MSEC_IN_HOUR = 60 * 60 * 1000;
-const MSEC_IN_DAY = 24 * MSEC_IN_HOUR;
+const getDiffDate = (dateFrom, dateTo) => {
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom), 'milliseconds');
+  const dur = dayjs.duration(diff);
 
-function getDiffDate(dateFrom, dateTo) {
-  const diff = dayjs(dateTo).diff(dayjs(dateFrom));
-
-  const formats = [
-    { condition : diff >= MSEC_IN_DAY, format: 'D[D] H[H] m[M]' },
-    { condition : diff >= MSEC_IN_HOUR, format: 'H[H] m[M]' },
-    { condition : true, format: 'm[M]' },
-  ];
-
-  const selectedFormat = formats.find(({ condition }) => condition).format;
-  return dayjs.duration(diff).format(selectedFormat);
-}
+  return [
+    [Math.floor(dur.asDays()), 'D'],
+    [dur.hours(), 'H'],
+    [dur.minutes(), 'M']
+  ]
+    .filter(([value]) => value > 0)
+    .map(([value, label]) => `${value}${label}`)
+    .join(' ') || '0M';
+};
 
 export {getEventDate, getDiffDate, };

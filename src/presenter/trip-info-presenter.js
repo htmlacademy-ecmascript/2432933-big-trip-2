@@ -3,7 +3,7 @@ import { render, remove, RenderPosition } from '../framework/render';
 import { getPointsDateDifference } from '../utils/sorting';
 import { getEventDate } from '../utils/formatDate';
 import { findByKey } from '../utils/utils';
-import { eventsTripInfo } from '../elements';
+import { eventsTripInfoElement } from '../elements';
 
 export default class TripInfoPresenter {
   #eventModel = null;
@@ -11,6 +11,7 @@ export default class TripInfoPresenter {
   #points = [];
   #offers = [];
   #destinations = [];
+
   constructor(eventModel){
     this.#eventModel = eventModel;
     this.#eventModel.addObserver(this.#handleModelEvent);
@@ -31,7 +32,7 @@ export default class TripInfoPresenter {
       endDate   : this.#getEndDate(),
     });
 
-    render(this.#tripInfoViewComponent, eventsTripInfo, RenderPosition.AFTERBEGIN);
+    render(this.#tripInfoViewComponent, eventsTripInfoElement, RenderPosition.AFTERBEGIN);
   }
 
   destroy () {
@@ -41,7 +42,7 @@ export default class TripInfoPresenter {
   }
 
   #getTitleDestinations() {
-    const destinationsNames = this.#points.map((point) => findByKey(this.#destinations, 'id', point.destination).name || {});
+    const destinationsNames = this.#points.map((point) => findByKey(this.#destinations, 'id', point.destination)?.name || []);
     return destinationsNames.length <= 3 ? destinationsNames.join(' — ') : `${destinationsNames[0]} —... — ${destinationsNames[destinationsNames.length - 1]}`;
   }
 
@@ -50,7 +51,7 @@ export default class TripInfoPresenter {
   }
 
   #getEndDate() {
-    return getEventDate(this.#points[this.#points.length - 1]?.dateFrom, 'D MMM');
+    return getEventDate(this.#points[this.#points.length - 1]?.dateTo, 'D MMM');
   }
 
   #calculateTotalSum() {
