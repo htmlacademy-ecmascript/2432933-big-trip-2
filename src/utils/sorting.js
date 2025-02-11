@@ -1,9 +1,9 @@
 import { SortType } from '../const';
 import dayjs from 'dayjs';
 
-const getPointsDateDifference = (points) => points.toSorted((a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom)));
-const getByPriceDescending = (points) => points.toSorted((a, b) => b.basePrice - a.basePrice);
-const getPointsDurationDifference = (points) => points.toSorted((a, b) => dayjs(b.dateTo).diff(dayjs(b.dateFrom)) - dayjs(a.dateTo).diff(dayjs(a.dateFrom)));
+const getPointsDateDifference = (points) => points.toSorted((pointFirst, pointSecond) => dayjs(pointFirst.dateFrom).diff(dayjs(pointSecond.dateFrom)));
+const getByPriceDescending = (points) => points.toSorted((pointFirst, pointSecond) =>pointSecond.basePrice - pointFirst.basePrice);
+const getPointsDurationDifference = (points) => points.toSorted((pointFirst, pointSecond) => dayjs(pointSecond.dateTo).diff(dayjs(pointSecond.dateFrom)) - dayjs(pointFirst.dateTo).diff(dayjs(pointFirst.dateFrom)));
 
 const sorting = {
   [SortType.DAY]   : (points) => getPointsDateDifference(points),
