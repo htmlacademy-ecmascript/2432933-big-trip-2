@@ -44,14 +44,14 @@ export default class FilterEventsView extends AbstractView {
     this.#currentFilter = currentFilter;
     this.#handleFilterTypeChange = onFilterTypeChange;
 
-    this.element.addEventListener('click', this.#filterTypeChangeHandler);
+    this.element.addEventListener('click', this.#onFilterInputChange);
   }
 
   get template() {
     return createFormFiltersTemplate(this.#filters, this.#currentFilter);
   }
 
-  #filterTypeChangeHandler = (evt) => {
+  #onFilterInputChange = (evt) => {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }

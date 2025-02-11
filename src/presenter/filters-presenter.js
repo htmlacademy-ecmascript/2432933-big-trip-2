@@ -1,4 +1,4 @@
-import FilterEventsView from '../view/filters-events-view.js';
+import FilterEventsView from '../view/filter-events-view.js';
 import { render, remove, replace } from '../framework/render';
 import { tripControlsElement } from '../elements.js';
 import { generateFilters } from '../utils/filter.js';

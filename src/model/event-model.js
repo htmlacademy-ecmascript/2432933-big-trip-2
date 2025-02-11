@@ -33,7 +33,6 @@ export default class EventModel extends Observable{
       this._notify(UpdateType.INIT);
     } catch(error) {
       this._notify(UpdateType.FATAL);
-      throw new Error(error);
     }
   }
 

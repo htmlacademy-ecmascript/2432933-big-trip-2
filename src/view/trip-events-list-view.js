@@ -15,10 +15,10 @@ export default class TripEventsListView extends AbstractView {
   }
 
   setClickListener() {
-    this.element.addEventListener('click', this.#handleClick);
+    this.element.addEventListener('click', this.#onListItemClick);
   }
 
-  #handleClick = (event) => {
+  #onListItemClick = (event) => {
     const item = event.target.closest('.trip-events__item');
     if (!item) {
       return;

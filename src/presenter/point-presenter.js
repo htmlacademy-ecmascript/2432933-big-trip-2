@@ -8,8 +8,8 @@ export default class PointPresenter {
   #itemComponent = null;
   #editComponent = null;
   #point = null;
-  #offers = null;
-  #destinations = null;
+  #offers = [];
+  #destinations = [];
   #mode = Mode.DEFAULT;
   #handleDataChange = null;
 

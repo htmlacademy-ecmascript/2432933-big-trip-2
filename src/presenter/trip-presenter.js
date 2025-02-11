@@ -38,7 +38,7 @@ export default class TripPresenter {
     this.#filtersModel = filtersModel;
     this.#eventModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
-    this.#onCreateNewPointClick();
+    this.#addListenerNewPointButton();
   }
 
   get points(){
@@ -134,11 +134,12 @@ export default class TripPresenter {
     this.#messageComponent.newMessage('Loading ...');
   }
 
-  #renderFatal(){
+  #renderFatal() {
     this.#isLoading = false;
     newPointButtonElement.disabled = true;
     this.#messageComponent.clearMessage();
     this.#messageComponent.newMessage('Failed to load latest route information');
+
   }
 
   #clearBoard() {
@@ -175,12 +176,12 @@ export default class TripPresenter {
     this.#newPointPresenter.destroy();
   };
 
-  #onCreateNewPointClick() {
+  #addListenerNewPointButton() {
     newPointButtonElement.disabled = true;
-    newPointButtonElement.addEventListener('click', this.#handleNewPointButtonClick);
+    newPointButtonElement.addEventListener('click', this.#onNewPointButtonClick);
   }
 
-  #handleNewPointButtonClick = () => {
+  #onNewPointButtonClick = () => {
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filtersModel.setFilter(UpdateType.MAJOR, DEFAULT_FILTER_TYPE);
     this.#newPointPresenter.init();
